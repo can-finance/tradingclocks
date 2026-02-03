@@ -11,10 +11,27 @@ let markets: Market[] = [];
 let originalMarkets: Map<string, Market> = new Map();
 let pendingChanges: Map<string, TimeOverride> = new Map();
 
+// ============ Theme Logic (Shared) ============
+function initTheme(): void {
+    const savedTheme = localStorage.getItem('trading-clocks-theme');
+    const isDark = savedTheme === 'dark';
+    document.body.classList.toggle('dark-mode', isDark);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+}
+
+function toggleTheme(): void {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+}
+
 /**
  * Initialize the editor
  */
 async function init(): Promise<void> {
+    initTheme();
     await loadMarkets();
     renderTable();
     setupEventListeners();
@@ -141,7 +158,7 @@ function renderMarketRow(market: Market, overrides: TimeOverrides): string {
             <td class="gmt-cell">${gmtOffset}</td>
             <td>
                 <div class="country-cell">
-                    <img class="country-flag" src="https://flagcdn.com/20x15/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
+                    <img class="country-flag" src="https://flagcdn.com/w40/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
                     <span class="country-name">${market.country}</span>
                 </div>
             </td>
@@ -210,6 +227,9 @@ function setupEventListeners(): void {
 
     // Reset all button
     document.getElementById('btn-reset-all')?.addEventListener('click', resetAllChanges);
+
+    // Theme toggle button
+    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 }
 
 /**

@@ -3,6 +3,8 @@ import './style.css';
 import { loadMarketsConfig } from './markets';
 import type { Market } from './types';
 
+import { getGMTOffset } from './timezone';
+
 // ============ Theme Logic (Shared) ============
 function initTheme(): void {
     const savedTheme = localStorage.getItem('trading-clocks-theme');
@@ -35,11 +37,19 @@ function renderDSTTable(markets: Market[]): void {
     const countries = Array.from(uniqueCountries.values());
 
     // Group by region
-    const regions = ['Americas', 'Europe', 'Asia-Pacific'];
+    const regions = ['Asia-Pacific', 'Europe', 'Americas'];
     let html = '';
 
     regions.forEach(region => {
-        const regionCountries = countries.filter(m => m.region === region);
+        const regionCountries = countries
+            .filter(m => m.region === region)
+            .sort((a, b) => { // Sort by GMT offset descending (East to West)
+                const offsetA = getGMTOffset(a.timezone);
+                const offsetB = getGMTOffset(b.timezone);
+                return offsetB - offsetA;
+            });
+
+        if (regionCountries.length === 0) return;
         if (regionCountries.length === 0) return;
 
         html += `<h2 class="dst-region-title">${region}</h2>`;
@@ -71,7 +81,7 @@ function renderDSTTable(markets: Market[]): void {
             html += `
                 <tr>
                     <td class="dst-country-cell">
-                        <img class="market-item-flag" src="https://flagcdn.com/16x12/${countryCode}.png" alt="${market.country}" />
+                        <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
                         <span>${market.country}</span>
                     </td>
                     <td>${market.dstEnd ? formatDstDate(market.dstEnd) : '-'}</td>

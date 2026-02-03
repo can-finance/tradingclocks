@@ -3,6 +3,7 @@ import './style.css';
 import { loadMarketsConfig } from './markets';
 import { loadHolidaysConfig, getMarketHolidays } from './holidays';
 import type { Market } from './types';
+import { getGMTOffset } from './timezone';
 
 // ============ Theme Logic (Shared) ============
 function initTheme(): void {
@@ -26,22 +27,32 @@ function renderHolidaysTable(markets: Market[]): void {
     if (!container) return;
 
     const year = 2026;
-    const regions = ['Americas', 'Europe', 'Asia-Pacific'];
+    const regions = ['Asia-Pacific', 'Europe', 'Americas'];
 
     // Render navigation
     const navContainer = document.getElementById('holidays-nav');
     if (navContainer) {
         let navHtml = '';
         regions.forEach(region => {
-            const regionMarkets = markets.filter(m => m.region === region);
+            const regionMarkets = markets
+                .filter(m => m.region === region)
+                .sort((a, b) => {
+                    const offsetA = getGMTOffset(a.timezone);
+                    const offsetB = getGMTOffset(b.timezone);
+                    return offsetB - offsetA;
+                });
+
             if (regionMarkets.length === 0) return;
 
             navHtml += `<div class="holidays-nav-region">${region}</div>`;
             regionMarkets.forEach(market => {
+                const holidays = getMarketHolidays(market.id, year);
+                if (holidays.length === 0) return; // Skip if no holidays (keep sync with main content)
+
                 const marketId = market.id.toLowerCase();
                 navHtml += `
                     <a href="#market-${marketId}" class="holidays-nav-link" data-market="${marketId}">
-                        <img class="market-item-flag" src="https://flagcdn.com/16x12/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
+                        <img class="market-item-flag" src="https://flagcdn.com/w40/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
                         <span>${market.name}</span>
                     </a>
                 `;
@@ -53,7 +64,14 @@ function renderHolidaysTable(markets: Market[]): void {
     let html = '';
 
     regions.forEach(region => {
-        const regionMarkets = markets.filter(m => m.region === region);
+        const regionMarkets = markets
+            .filter(m => m.region === region)
+            .sort((a, b) => {
+                const offsetA = getGMTOffset(a.timezone);
+                const offsetB = getGMTOffset(b.timezone);
+                return offsetB - offsetA;
+            });
+
         if (regionMarkets.length === 0) return;
 
         const regionId = region.toLowerCase().replace(/\s+/g, '-');
@@ -68,11 +86,13 @@ function renderHolidaysTable(markets: Market[]): void {
 
             html += `
                 <div class="card glass-panel" id="market-${marketId}" style="margin-bottom: 1.25rem; padding: 1.25rem;">
-                    <div class="market-header" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle);">
-                        <img class="market-item-flag" src="https://flagcdn.com/24x18/${countryCode}.png" alt="${market.country}" style="width: 24px; height: 18px;" />
-                        <div>
-                            <h3 style="margin: 0; font-size: 1rem;">${market.name}</h3>
-                            <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">${market.code}</div>
+                    <div class="market-header" style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle);">
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0; font-size: 1.15rem;">${market.name}</h3>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                                <img class="market-item-flag" src="https://flagcdn.com/w80/${countryCode}.png" alt="${market.country}" style="width: 24px; height: auto; border-radius: 2px;" />
+                                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">${market.code}</div>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive">

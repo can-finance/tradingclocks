@@ -156,7 +156,7 @@ function renderMarketSelector(): void {
           <input type="checkbox" 
                  data-market-id="${market.id}" 
                  ${isChecked ? 'checked' : ''} />
-          <img class="market-item-flag" src="https://flagcdn.com/16x12/${countryCode}.png" alt="${market.country}" />
+          <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
           <span class="market-item-name">${market.country}</span>
           <span class="market-item-code">${market.code}</span>
         </label>
@@ -259,10 +259,12 @@ function renderClocks(): void {
         ${hasOverride ? '<div class="override-badge">Custom</div>' : ''}
         <div class="clock-header">
           <div class="clock-identity">
-            <img class="clock-flag" src="https://flagcdn.com/24x18/${countryCode}.png" alt="${market.country}" />
             <div class="clock-info">
               <h3>${market.name}</h3>
-              <div class="clock-code">${market.code}</div>
+              <div class="clock-meta">
+                <img class="clock-flag" src="https://flagcdn.com/w80/${countryCode}.png" alt="${market.country}" />
+                <div class="clock-code">${market.code}</div>
+              </div>
             </div>
           </div>
         </div>

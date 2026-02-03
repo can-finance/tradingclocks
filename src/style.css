@@ -328,9 +328,11 @@ h3 {
 }
 
 .market-item-flag {
-  width: 16px;
-  height: 12px;
+  width: 20px;
+  height: auto;
   flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .market-item-name {
@@ -527,6 +529,7 @@ h3 {
   gap: var(--spacing-lg);
   padding: var(--spacing-xl);
   flex: 1;
+  align-items: start;
 }
 
 /* Empty State */
@@ -619,14 +622,29 @@ h3 {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.clock-info {
+  flex: 1;
+}
+
+.clock-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: 4px;
 }
 
 .clock-flag {
-  font-size: 1.5rem;
+  width: 24px;
+  height: auto;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .clock-info h3 {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 

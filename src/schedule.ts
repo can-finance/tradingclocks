@@ -142,7 +142,7 @@ function renderScheduleTable(markets: Market[]): void {
             html += `
                 <tr>
                     <td class="dst-country-cell">
-                        <img class="market-item-flag" src="https://flagcdn.com/16x12/${countryCode}.png" alt="${market.country}" />
+                        <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
                         <span>${market.country}</span>
                     </td>
                     <td style="font-family: var(--font-mono); font-weight: 500;">${openFmt.time} <span style="font-size:0.75em; color:var(--text-muted)">${openFmt.tzAbbrev}</span></td>
