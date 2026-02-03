@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Editor | Trading Clocks</title>
+    <meta name="description" content="Edit market trading hours for all global exchanges." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/editor.css">
+</head>
+
+<body>
+    <div id="app" class="editor-app">
+        <!-- Header -->
+        <header class="editor-header">
+            <div class="editor-header-left">
+                <a href="/" class="back-link">← Back to Clocks</a>
+                <h1>⚙️ Market Editor</h1>
+            </div>
+            <div class="editor-header-actions">
+                <button class="btn btn-secondary" id="btn-reset-all">Reset All</button>
+                <button class="btn btn-primary" id="btn-save-all">Save All Changes</button>
+            </div>
+        </header>
+
+        <!-- Editor Content -->
+        <main class="editor-main">
+            <div class="editor-info">
+                <p>Edit opening and closing times for each market. Changes are saved to your browser and will override
+                    the default times on the clocks page.</p>
+            </div>
+
+            <!-- Markets Table -->
+            <div class="table-container" id="markets-table-container">
+                <!-- Table populated by JavaScript -->
+                <div class="loading">Loading markets...</div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/editor.ts"></script>
+</body>
+
+</html>
