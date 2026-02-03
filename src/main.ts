@@ -23,7 +23,7 @@ let selectedMarketIds: string[] = [];
 let timeOverrides: TimeOverrides = {};
 
 // Default markets to show on first visit
-const DEFAULT_MARKETS = ['nyse', 'nasdaq', 'tsx', 'lse', 'xetra', 'tse', 'hkex', 'asx'];
+const DEFAULT_MARKETS = ['nyse', 'tsx', 'lse', 'xetra', 'tse', 'hkex', 'asx'];
 
 // ============ DOM Elements ============
 interface Elements {

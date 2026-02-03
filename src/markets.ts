@@ -32,7 +32,7 @@ export let markets: Market[] = [...defaultMarkets];
  */
 export async function loadMarketsConfig(): Promise<Market[]> {
     try {
-        const response = await fetch('markets-config.json');
+        const response = await fetch(`${import.meta.env.BASE_URL}markets-config.json`);
         if (!response.ok) {
             throw new Error(`Failed to load config: ${response.status}`);
         }
