@@ -25,7 +25,7 @@ async function init(): Promise<void> {
  */
 async function loadMarkets(): Promise<void> {
     try {
-        const response = await fetch('/markets-config.json');
+        const response = await fetch('markets-config.json');
         if (!response.ok) {
             throw new Error(`Failed to load config: ${response.status}`);
         }
