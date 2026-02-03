@@ -3,13 +3,15 @@
  */
 
 import type { Market, MarketStatus, FormattedTime, TimeOverride } from './types';
+import { timeService } from './timeService';
+import { getMarketHolidays } from './holidays';
 
 /**
  * Parse a time string (HH:MM) and create a Date for today in the given timezone.
  * Returns a Date object representing that time in the target timezone.
  */
 export function parseTimeInTimezone(timeStr: string, timezone: string): Date {
-    const now = new Date();
+    const now = timeService.getNow();
 
     // Get today's date components in the target timezone
     const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -80,29 +82,136 @@ export function parseTimeInTimezone(timeStr: string, timezone: string): Date {
  */
 export function getMarketStatus(market: Market, overrides: Partial<TimeOverride> = {}): MarketStatus {
     const openTime = overrides.openTime || market.openTime;
-    const closeTime = overrides.closeTime || market.closeTime;
+    let closeTime = overrides.closeTime || market.closeTime;
 
-    const now = new Date();
+    const now = timeService.getNow();
+
+    // Helper to get date string in market timezone (YYYY-MM-DD)
+    const getMarketDateStr = (date: Date): string => {
+        return new Intl.DateTimeFormat('en-CA', {
+            timeZone: market.timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(date);
+    };
+
+    // Helper to get day of week in market timezone
+    const getDayInMarket = (date: Date): number => {
+        const dayFormatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: market.timezone,
+            weekday: 'short'
+        });
+        const dayStr = dayFormatter.format(date);
+        const dayMap: Record<string, number> = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+        return dayMap[dayStr] ?? 0;
+    };
+
+    // Helper to find next trading day (skips weekends and holidays)
+    const findNextTradingDay = (startDate: Date): { nextOpen: Date; holidayName?: string } => {
+        let candidate = new Date(startDate);
+        let attempts = 0;
+        const maxAttempts = 14; // Don't loop forever
+
+        while (attempts < maxAttempts) {
+            const candidateDay = getDayInMarket(candidate);
+
+            // Skip weekends
+            if (candidateDay === 0) { // Sunday
+                candidate.setDate(candidate.getDate() + 1);
+                attempts++;
+                continue;
+            }
+            if (candidateDay === 6) { // Saturday
+                candidate.setDate(candidate.getDate() + 2);
+                attempts++;
+                continue;
+            }
+
+            // Check if this day is a holiday
+            const candidateDateStr = getMarketDateStr(candidate);
+            const year = parseInt(candidateDateStr.substring(0, 4));
+            const holidays = getMarketHolidays(market.id, year);
+            const holiday = holidays.find(h => h.date === candidateDateStr);
+
+            if (holiday && holiday.status === 'closed') {
+                // This is a holiday, skip to next day and get the holiday name for display
+                candidate.setDate(candidate.getDate() + 1);
+                attempts++;
+                continue;
+            }
+
+            // Found a valid trading day
+            // Check if there's an upcoming holiday (for the "next day is a holiday" case)
+            // Actually, we want to return the holiday info if the *previously checked* day was a holiday
+            // For now, just return the valid trading day
+            return { nextOpen: candidate };
+        }
+
+        // Fallback if we couldn't find a valid day
+        return { nextOpen: candidate };
+    };
+
+    // Helper to check if a specific date is a holiday
+    const getHolidayForDate = (date: Date): { name: string; status: string; closeTime?: string } | null => {
+        const dateStr = getMarketDateStr(date);
+        const year = parseInt(dateStr.substring(0, 4));
+        const holidays = getMarketHolidays(market.id, year);
+        return holidays.find(h => h.date === dateStr) || null;
+    };
+
+    const marketDateStr = getMarketDateStr(now);
+    const todayHoliday = getHolidayForDate(now);
+
+    let holidayName: string | undefined;
+
+    // Handle today being a holiday
+    if (todayHoliday) {
+        holidayName = todayHoliday.name;
+        if (todayHoliday.status === 'closed') {
+            // Find next trading day starting from tomorrow
+            const tomorrow = new Date(parseTimeInTimezone(openTime, market.timezone));
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const { nextOpen } = findNextTradingDay(tomorrow);
+
+            return {
+                isOpen: false,
+                isWeekend: false,
+                timeUntil: nextOpen.getTime() - now.getTime(),
+                nextEvent: 'opens',
+                nextEventTime: nextOpen,
+                holidayName,
+                isTodayHoliday: true
+            };
+        } else if (todayHoliday.status === 'early-close' && todayHoliday.closeTime) {
+            closeTime = todayHoliday.closeTime;
+        }
+    }
+
     const openDate = parseTimeInTimezone(openTime, market.timezone);
     const closeDate = parseTimeInTimezone(closeTime, market.timezone);
+    const dayInMarket = getDayInMarket(now);
 
-    // Get the day in market timezone
-    const marketNow = new Date(now.toLocaleString('en-US', { timeZone: market.timezone }));
-    const dayInMarket = marketNow.getDay();
-
-    // Weekend handling
+    // Weekend handling - find next trading day (which checks for holidays too)
     if (dayInMarket === 0 || dayInMarket === 6) {
-        // Calculate time until Monday open
         const daysUntilMonday = dayInMarket === 0 ? 1 : 2;
-        const mondayOpen = new Date(openDate);
-        mondayOpen.setDate(mondayOpen.getDate() + daysUntilMonday);
+        const potentialMonday = new Date(openDate);
+        potentialMonday.setDate(potentialMonday.getDate() + daysUntilMonday);
+
+        // Check if Monday (or the next weekday) is a holiday
+        const { nextOpen } = findNextTradingDay(potentialMonday);
+
+        // Check if the first weekday was a holiday to show the info
+        const mondayDateStr = getMarketDateStr(potentialMonday);
+        const mondayHoliday = getHolidayForDate(potentialMonday);
 
         return {
             isOpen: false,
             isWeekend: true,
-            timeUntil: mondayOpen.getTime() - now.getTime(),
+            timeUntil: nextOpen.getTime() - now.getTime(),
             nextEvent: 'opens',
-            nextEventTime: mondayOpen
+            nextEventTime: nextOpen,
+            holidayName: mondayHoliday?.status === 'closed' ? mondayHoliday.name : undefined
         };
     }
 
@@ -113,7 +222,8 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
             isWeekend: false,
             timeUntil: openDate.getTime() - now.getTime(),
             nextEvent: 'opens',
-            nextEventTime: openDate
+            nextEventTime: openDate,
+            holidayName
         };
     }
 
@@ -124,26 +234,34 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
             isWeekend: false,
             timeUntil: closeDate.getTime() - now.getTime(),
             nextEvent: 'closes',
-            nextEventTime: closeDate
+            nextEventTime: closeDate,
+            holidayName // e.g. "Early Close" name
         };
     }
 
     // After market closes - calculate next open
-    const nextOpenDate = new Date(openDate);
+    let potentialNextOpen = new Date(openDate);
     if (dayInMarket === 5) {
-        // Friday after close - next open is Monday
-        nextOpenDate.setDate(nextOpenDate.getDate() + 3);
+        // Friday after close - check Monday
+        potentialNextOpen.setDate(potentialNextOpen.getDate() + 3);
     } else {
-        // Regular day - next open is tomorrow
-        nextOpenDate.setDate(nextOpenDate.getDate() + 1);
+        // Regular day - check tomorrow
+        potentialNextOpen.setDate(potentialNextOpen.getDate() + 1);
     }
+
+    // Find valid trading day (skipping holidays)
+    const { nextOpen } = findNextTradingDay(potentialNextOpen);
+
+    // Check if the immediate next day was a holiday to show info
+    const nextDayHoliday = getHolidayForDate(potentialNextOpen);
 
     return {
         isOpen: false,
         isWeekend: false,
-        timeUntil: nextOpenDate.getTime() - now.getTime(),
+        timeUntil: nextOpen.getTime() - now.getTime(),
         nextEvent: 'opens',
-        nextEventTime: nextOpenDate
+        nextEventTime: nextOpen,
+        holidayName: nextDayHoliday?.status === 'closed' ? nextDayHoliday.name : undefined
     };
 }
 
@@ -202,7 +320,7 @@ export function getUserTimezone(): string {
  */
 export function getGMTOffset(timezone: string): number {
     try {
-        const now = new Date();
+        const now = timeService.getNow();
         const formatter = new Intl.DateTimeFormat('en-US', {
             timeZone: timezone,
             timeZoneName: 'shortOffset'

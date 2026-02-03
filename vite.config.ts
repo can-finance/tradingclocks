@@ -9,6 +9,7 @@ export default defineConfig({
                 main: 'index.html',
                 dst: 'dst.html',
                 editor: 'editor.html',
+                schedule: 'schedule.html',
             },
         },
     },

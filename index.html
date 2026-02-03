@@ -21,14 +21,15 @@
 </head>
 
 <body>
+  <div id="time-travel-indicator" class="time-travel-indicator">
+    <span>⚠️ Time Travel Active</span>
+  </div>
   <div id="app">
     <!-- Sidebar -->
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">
-          <span class="sidebar-icon">🌐</span>
-          <span>Select Markets</span>
-        </div>
+      <div class="sidebar-header" style="justify-content: center; gap: 10px;">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">◀</button>
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
       </div>
       <div class="sidebar-content" id="market-selector">
@@ -49,13 +50,16 @@
         <div class="header-title">
           <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
           <h1>🕐 Trading Clocks</h1>
-          <a href="editor.html" class="header-editor-link">⚙️ Edit Markets</a>
+          <a href="editor.html" class="header-editor-link">⚙️ Override Market Hours</a>
+          <a href="schedule.html" class="header-editor-link">🕒 Schedule</a>
           <a href="dst.html" class="header-editor-link">📅 DST</a>
+          <a href="holidays-summary.html" class="header-editor-link">🎉 Holidays</a>
         </div>
         <div class="header-time">
           <div class="local-time">
             <div class="local-time-label">Your Local Time</div>
             <div class="local-time-wrapper">
+              <div class="local-date" id="local-date">---</div>
               <div class="local-time-value" id="local-time">--:--:--</div>
               <div class="local-time-tz" id="local-tz">---</div>
             </div>

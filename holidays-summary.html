@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2026 Holidays | Trading Clocks</title>
+    <meta name="description" content="Complete 2026 holiday calendar for global stock markets." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>" />
+</head>
+
+<body>
+    <div id="app">
+        <!-- Main Content -->
+        <main class="main-content" style="margin-left: 0; width: 100%;">
+            <header class="header">
+                <div class="header-title">
+                    <a href="index.html" class="header-back-link">← Back</a>
+                    <h1>🎉 2026 Holidays</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+                </div>
+            </header>
+
+            <div class="holidays-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="holidays-sidebar">
+                    <div class="holidays-sidebar-header">
+                        <h3>Markets</h3>
+                    </div>
+                    <nav id="holidays-nav" class="holidays-nav">
+                        <!-- Populated by JavaScript -->
+                    </nav>
+                </aside>
+
+                <!-- Main Content -->
+                <div class="holidays-main">
+                    <div class="schedule-intro">
+                        <strong>2026 Trading Holiday Calendar</strong><br>
+                        View all market closures and early-close days for stock exchanges worldwide.
+                    </div>
+
+                    <div id="holidays-container">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="src/holidays-summary.ts"></script>
+</body>
+
+</html>

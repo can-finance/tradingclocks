@@ -1,0 +1,1157 @@
+{
+    "2026": {
+        "nyse": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-19",
+                "name": "Martin Luther King, Jr. Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-16",
+                "name": "Washington's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "Memorial Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-19",
+                "name": "Juneteenth National Independence Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-07-03",
+                "name": "Independence Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-07",
+                "name": "Labor Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-11-26",
+                "name": "Thanksgiving Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-11-27",
+                "name": "Black Friday",
+                "status": "early-close",
+                "closeTime": "13:00"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "13:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            }
+        ],
+        "nasdaq": "nyse",
+        "euronext-paris": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            }
+        ],
+        "xetra": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-26",
+                "name": "Boxing Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
+            }
+        ],
+        "six": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-02",
+                "name": "St. Berchtold's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-14",
+                "name": "Ascension Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "Whit Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-08-01",
+                "name": "Swiss National Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-26",
+                "name": "St. Stephen's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
+            }
+        ],
+        "euronext-amsterdam": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            }
+        ],
+        "euronext-brussels": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            }
+        ],
+        "bme": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "14:00"
+            }
+        ],
+        "borsa-italiana": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            }
+        ],
+        "wiener-borse": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-26",
+                "name": "National Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
+            }
+        ],
+        "nasdaq-nordic-stockholm": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-06",
+                "name": "Epiphany",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-14",
+                "name": "Ascension Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-19",
+                "name": "Midsummer Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
+            }
+        ],
+        "nasdaq-nordic-copenhagen": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-02",
+                "name": "Maundy Thursday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-14",
+                "name": "Ascension Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-15",
+                "name": "Day After Ascension",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "Whit Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-05",
+                "name": "Constitution Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
+            }
+        ],
+        "nasdaq-nordic-helsinki": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-06",
+                "name": "Epiphany",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "May Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-14",
+                "name": "Ascension Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-19",
+                "name": "Midsummer Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Day Holiday",
+                "status": "closed"
+            }
+        ],
+        "oslo-bors": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-01",
+                "name": "Holy Wednesday",
+                "status": "early-close",
+                "closeTime": "13:00"
+            },
+            {
+                "date": "2026-04-02",
+                "name": "Maundy Thursday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-14",
+                "name": "Ascension Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "Whit Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
+            }
+        ],
+        "euronext-dublin": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-04",
+                "name": "May Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-28",
+                "name": "St Stephen's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            }
+        ],
+        "hkex": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-16",
+                "name": "Lunar New Year Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            },
+            {
+                "date": "2026-02-17",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-18",
+                "name": "Second Day of Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-19",
+                "name": "Third Day of Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "The Day Following Ching Ming Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-07",
+                "name": "The Day Following Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "The Day Following Buddha's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-19",
+                "name": "Tuen Ng Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2026-07-01",
+                "name": "Hong Kong SAR Establishment Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-01",
+                "name": "National Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-19",
+                "name": "The Day Following Chung Yeung Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            }
+        ],
+        "asx": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-26",
+                "name": "Australia Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-27",
+                "name": "ANZAC Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-08",
+                "name": "King's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "14:30"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-28",
+                "name": "Boxing Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "14:30"
+            }
+        ],
+        "sgx": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-16",
+                "name": "Lunar New Year Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            },
+            {
+                "date": "2026-02-17",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-18",
+                "name": "Second Day of Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-27",
+                "name": "Hari Raya Haji",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-01",
+                "name": "Vesak Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-08-10",
+                "name": "National Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-11-09",
+                "name": "Deepavali (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            }
+        ],
+        "nzx": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-02",
+                "name": "Day After New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-06",
+                "name": "Waitangi Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-27",
+                "name": "ANZAC Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-01",
+                "name": "King's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-07-10",
+                "name": "Matariki",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-26",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-28",
+                "name": "Boxing Day (Observed)",
+                "status": "closed"
+            }
+        ],
+        "tsx": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-16",
+                "name": "Family Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-18",
+                "name": "Victoria Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-07-01",
+                "name": "Canada Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-08-03",
+                "name": "Civic Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-07",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-30",
+                "name": "National Day for Truth and Reconciliation",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-12",
+                "name": "Thanksgiving Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-28",
+                "name": "Boxing Day (Observed)",
+                "status": "closed"
+            }
+        ],
+        "lse": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-04",
+                "name": "Early May Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "Spring Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-08-31",
+                "name": "Summer Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-28",
+                "name": "Boxing Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            }
+        ],
+        "tse": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-02",
+                "name": "Market Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-01-12",
+                "name": "Coming of Age Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-11",
+                "name": "National Foundation Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-23",
+                "name": "Emperor's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-03-20",
+                "name": "Vernal Equinox",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-29",
+                "name": "Showa Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-04",
+                "name": "Greenery Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-05",
+                "name": "Children's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-06",
+                "name": "Constitution Memorial Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-07-20",
+                "name": "Marine Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-08-11",
+                "name": "Mountain Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-21",
+                "name": "Respect for the Aged Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-22",
+                "name": "Citizen's Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-23",
+                "name": "Autumnal Equinox",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-12",
+                "name": "Sports Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-11-03",
+                "name": "Culture Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-11-23",
+                "name": "Labor Thanksgiving Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "Market Holiday",
+                "status": "closed"
+            }
+        ]
+    }
+}

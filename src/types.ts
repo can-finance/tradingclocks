@@ -27,6 +27,8 @@ export interface MarketStatus {
     timeUntil: number;
     nextEvent: 'opens' | 'closes';
     nextEventTime: Date;
+    holidayName?: string;
+    isTodayHoliday?: boolean;
 }
 
 export interface FormattedTime {

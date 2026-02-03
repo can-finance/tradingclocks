@@ -3,7 +3,9 @@
  */
 
 import './style.css';
+import './debug'; // Initialize Debug UI
 import { markets, getMarketsByRegion, loadMarketsConfig } from './markets';
+import { loadHolidaysConfig } from './holidays';
 import {
   getMarketStatus,
   formatCountdown,
@@ -11,6 +13,7 @@ import {
   getUserTimezone,
   parseTimeInTimezone
 } from './timezone';
+import { timeService } from './timeService';
 import {
   getSelectedMarkets,
   saveSelectedMarkets,
@@ -23,20 +26,23 @@ let selectedMarketIds: string[] = [];
 let timeOverrides: TimeOverrides = {};
 
 // Default markets to show on first visit
-const DEFAULT_MARKETS = ['nyse', 'tsx', 'lse', 'xetra', 'tse', 'hkex', 'asx'];
+const DEFAULT_MARKETS = ['asx', 'tse', 'hkex', 'sgx', 'euronext-paris', 'lse', 'nyse', 'tsx'];
 
 // ============ DOM Elements ============
 interface Elements {
   clockGrid: HTMLElement;
   marketSelector: HTMLElement;
   localTime: HTMLElement;
+  localDate: HTMLElement;
   localTz: HTMLElement;
   btnSelectAll: HTMLButtonElement;
   btnDeselectAll: HTMLButtonElement;
   menuToggle: HTMLButtonElement;
   themeToggle: HTMLButtonElement;
+  sidebarToggle: HTMLButtonElement;
   sidebar: HTMLElement;
   sidebarOverlay: HTMLElement;
+  timeTravelIndicator: HTMLElement;
 }
 
 function getElements(): Elements {
@@ -44,13 +50,16 @@ function getElements(): Elements {
     clockGrid: document.getElementById('clock-grid')!,
     marketSelector: document.getElementById('market-selector')!,
     localTime: document.getElementById('local-time')!,
+    localDate: document.getElementById('local-date')!,
     localTz: document.getElementById('local-tz')!,
     btnSelectAll: document.getElementById('btn-select-all') as HTMLButtonElement,
     btnDeselectAll: document.getElementById('btn-deselect-all') as HTMLButtonElement,
     menuToggle: document.getElementById('menu-toggle') as HTMLButtonElement,
     themeToggle: document.getElementById('theme-toggle') as HTMLButtonElement,
+    sidebarToggle: document.getElementById('sidebar-toggle') as HTMLButtonElement,
     sidebar: document.getElementById('sidebar')!,
-    sidebarOverlay: document.getElementById('sidebar-overlay')!
+    sidebarOverlay: document.getElementById('sidebar-overlay')!,
+    timeTravelIndicator: document.getElementById('time-travel-indicator')!
   };
 }
 
@@ -76,10 +85,26 @@ function updateThemeIcon(isDark: boolean): void {
   }
 }
 
+// ============ Sidebar ============
+function initSidebar(): void {
+  const savedState = localStorage.getItem('trading-clocks-sidebar');
+  const isCollapsed = savedState === 'collapsed';
+  if (isCollapsed) {
+    document.getElementById('sidebar')?.classList.add('is-collapsed');
+  }
+}
+
+function toggleSidebar(): void {
+  const sidebar = elements.sidebar;
+  const isCollapsed = sidebar.classList.toggle('is-collapsed');
+  localStorage.setItem('trading-clocks-sidebar', isCollapsed ? 'collapsed' : 'expanded');
+}
+
 // ============ Initialization ============
 async function init(): Promise<void> {
   // Initialize theme before getting elements
   initTheme();
+  initSidebar();
 
   elements = getElements();
 
@@ -88,6 +113,7 @@ async function init(): Promise<void> {
 
   // Load markets from config file
   await loadMarketsConfig();
+  await loadHolidaysConfig(); // Added this line
 
   // Load persisted state
   selectedMarketIds = getSelectedMarkets(DEFAULT_MARKETS);
@@ -211,7 +237,7 @@ function renderClocks(): void {
     }
 
     // Format current times
-    const now = new Date();
+    const now = timeService.getNow();
     const marketTime = formatTimeInTimezone(now, market.timezone);
     const userTz = getUserTimezone();
 
@@ -244,7 +270,14 @@ function renderClocks(): void {
         <div class="clock-status-row">
           <div class="clock-status">
             <div class="status-indicator"></div>
-            <div class="status-text">${statusText}</div>
+            <div class="status-text">
+              ${status.isTodayHoliday
+        ? `Holiday: ${status.holidayName}`
+        : status.holidayName
+          ? `${statusText} · Next: ${status.holidayName}`
+          : statusText
+      }
+            </div>
           </div>
           <div class="market-now">
             <span class="market-now-time">${marketTime.time}</span>
@@ -253,7 +286,7 @@ function renderClocks(): void {
         </div>
         
         <div class="clock-countdown">
-          <div class="countdown-label">${countdownLabel}</div>
+          <div class="countdown-label">${status.isTodayHoliday ? 'Reopens in' : countdownLabel}</div>
           <div class="countdown-value">${formatCountdown(status.timeUntil)}</div>
         </div>
         
@@ -293,7 +326,7 @@ function renderClocks(): void {
 }
 
 function updateLocalTime(): void {
-  const now = new Date();
+  const now = timeService.getNow();
   const userTz = getUserTimezone();
   const { time, tzAbbrev } = formatTimeInTimezone(now, userTz);
 
@@ -305,7 +338,15 @@ function updateLocalTime(): void {
   const timeWithSeconds = `${timeStr}:${seconds}${period}`;
 
   elements.localTime.textContent = timeWithSeconds;
+  elements.localDate.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
   elements.localTz.textContent = tzAbbrev;
+
+  // Update Time Travel Indicator
+  if (timeService.isSimulationActive()) {
+    elements.timeTravelIndicator.classList.add('is-visible');
+  } else {
+    elements.timeTravelIndicator.classList.remove('is-visible');
+  }
 }
 
 // ============ Event Handlers ============
@@ -330,6 +371,9 @@ function setupEventListeners(): void {
     elements.sidebar.classList.toggle('is-open');
     elements.sidebarOverlay.classList.toggle('is-active');
   });
+
+  // Sidebar toggle
+  elements.sidebarToggle.addEventListener('click', toggleSidebar);
 
   // Theme toggle
   elements.themeToggle.addEventListener('click', toggleTheme);
