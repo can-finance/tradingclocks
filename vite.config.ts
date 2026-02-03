@@ -10,6 +10,7 @@ export default defineConfig({
                 dst: 'dst.html',
                 editor: 'editor.html',
                 schedule: 'schedule.html',
+                holidays: 'holidays-summary.html',
             },
         },
     },
