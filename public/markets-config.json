@@ -235,7 +235,9 @@
             "closeTime": "15:30",
             "region": "Asia-Pacific",
             "dstStart": null,
-            "dstEnd": null
+            "dstEnd": null,
+            "lunchStart": "11:30",
+            "lunchEnd": "12:30"
         },
         {
             "id": "hkex",
@@ -249,7 +251,9 @@
             "closeTime": "16:00",
             "region": "Asia-Pacific",
             "dstStart": null,
-            "dstEnd": null
+            "dstEnd": null,
+            "lunchStart": "12:00",
+            "lunchEnd": "13:00"
         },
         {
             "id": "asx",

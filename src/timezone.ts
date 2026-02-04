@@ -160,7 +160,6 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         return holidays.find(h => h.date === dateStr) || null;
     };
 
-    const marketDateStr = getMarketDateStr(now);
     const todayHoliday = getHolidayForDate(now);
 
     let holidayName: string | undefined;
@@ -202,7 +201,6 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         const { nextOpen } = findNextTradingDay(potentialMonday);
 
         // Check if the first weekday was a holiday to show the info
-        const mondayDateStr = getMarketDateStr(potentialMonday);
         const mondayHoliday = getHolidayForDate(potentialMonday);
 
         return {
@@ -227,15 +225,58 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         };
     }
 
-    // Market is open
+    // Market is open (or on lunch break)
     if (now >= openDate && now < closeDate) {
+        // Parse lunch break times if they exist
+        let lunchStartDate: Date | undefined;
+        let lunchEndDate: Date | undefined;
+
+        if (market.lunchStart && market.lunchEnd) {
+            lunchStartDate = parseTimeInTimezone(market.lunchStart, market.timezone);
+            lunchEndDate = parseTimeInTimezone(market.lunchEnd, market.timezone);
+
+            // Check if currently on lunch break
+            if (now >= lunchStartDate && now < lunchEndDate) {
+                return {
+                    isOpen: false,
+                    isWeekend: false,
+                    timeUntil: lunchEndDate.getTime() - now.getTime(),
+                    nextEvent: 'reopens',
+                    nextEventTime: lunchEndDate,
+                    holidayName,
+                    isOnLunch: true,
+                    lunchStart: lunchStartDate,
+                    lunchEnd: lunchEndDate
+                };
+            }
+
+            // Check if lunch is coming up (before lunch)
+            if (now < lunchStartDate) {
+                return {
+                    isOpen: true,
+                    isWeekend: false,
+                    timeUntil: lunchStartDate.getTime() - now.getTime(),
+                    nextEvent: 'lunch-starts',
+                    nextEventTime: lunchStartDate,
+                    holidayName,
+                    isOnLunch: false,
+                    lunchStart: lunchStartDate,
+                    lunchEnd: lunchEndDate
+                };
+            }
+        }
+
+        // Normal open (no lunch or after lunch)
         return {
             isOpen: true,
             isWeekend: false,
             timeUntil: closeDate.getTime() - now.getTime(),
             nextEvent: 'closes',
             nextEventTime: closeDate,
-            holidayName // e.g. "Early Close" name
+            holidayName,
+            isOnLunch: false,
+            lunchStart: lunchStartDate,
+            lunchEnd: lunchEndDate
         };
     }
 

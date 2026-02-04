@@ -147,6 +147,13 @@ h1 {
   font-size: 1.75rem;
 }
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+  width: 100%;
+}
+
 h2 {
   font-size: 1.25rem;
 }
@@ -196,7 +203,8 @@ h3 {
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: var(--spacing-sm);
 }
 
 
@@ -205,9 +213,9 @@ h3 {
 
 /* Sidebar Toggle Button */
 .sidebar-toggle {
-  width: 32px;
-  height: 32px;
-  border: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-glass);
   background: var(--bg-glass);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -222,6 +230,7 @@ h3 {
 .sidebar-toggle:hover {
   background: var(--bg-glass-hover);
   color: var(--text-primary);
+  border-color: var(--accent-primary);
 }
 
 .sidebar.is-collapsed .sidebar-toggle {
@@ -230,9 +239,9 @@ h3 {
 
 /* Theme Toggle */
 .theme-toggle {
-  width: 32px;
-  height: 32px;
-  border: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-glass);
   background: var(--bg-glass);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -241,10 +250,13 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-secondary);
 }
 
 .theme-toggle:hover {
   background: var(--bg-glass-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
 }
 
 .sidebar-content {
@@ -387,6 +399,12 @@ h3 {
   display: flex;
   flex-direction: column;
   transition: margin-left var(--transition-base);
+  min-width: 0;
+}
+
+.main-content.no-sidebar {
+  margin-left: 0;
+  width: 100%;
 }
 
 .sidebar.is-collapsed~.sidebar-overlay~.main-content {
@@ -610,6 +628,15 @@ h3 {
   opacity: 1;
 }
 
+.clock-card.is-on-lunch {
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.clock-card.is-on-lunch::before {
+  background: #fbbf24;
+  opacity: 0.8;
+}
+
 /* Card Header */
 .clock-header {
   display: flex;
@@ -765,6 +792,83 @@ h3 {
 
 .is-closing-soon .countdown-value {
   color: var(--status-closing-soon);
+}
+
+.is-on-lunch .status-text {
+  color: #fbbf24;
+}
+
+.is-on-lunch .countdown-value {
+  color: #fbbf24;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.progress-bar-track {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  overflow: visible;
+}
+
+.progress-bar-track.segmented {
+  gap: 4px;
+  background: transparent;
+}
+
+.progress-bar-segment {
+  height: 100%;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.progress-bar-gap {
+  width: 4px;
+  min-width: 4px;
+  height: 100%;
+  background: repeating-linear-gradient(90deg,
+      var(--text-muted) 0px,
+      var(--text-muted) 1px,
+      transparent 1px,
+      transparent 2px);
+  opacity: 0.5;
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+
+/* Status-based fill colors */
+.is-open .progress-bar-fill {
+  background: var(--status-open);
+}
+
+.is-closing-soon .progress-bar-fill {
+  background: var(--status-closing-soon);
+}
+
+.is-on-lunch .progress-bar-fill {
+  background: #fbbf24;
+}
+
+.is-closed .progress-bar-fill {
+  background: #6b7280;
+  opacity: 0.6;
 }
 
 /* Schedule Display */

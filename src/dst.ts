@@ -9,16 +9,7 @@ import { getGMTOffset } from './timezone';
 function initTheme(): void {
     const savedTheme = localStorage.getItem('trading-clocks-theme');
     const isDark = savedTheme === 'dark';
-    document.body.classList.toggle('dark-mode', isDark);
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
-}
-
-function toggleTheme(): void {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    document.documentElement.classList.toggle('dark-mode', isDark);
 }
 
 // ============ Render Logic ============
@@ -80,9 +71,11 @@ function renderDSTTable(markets: Market[]): void {
 
             html += `
                 <tr>
-                    <td class="dst-country-cell">
-                        <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
-                        <span>${market.country}</span>
+                    <td>
+                        <div class="dst-country-cell">
+                            <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
+                            <span>${market.country}</span>
+                        </div>
                     </td>
                     <td>${market.dstEnd ? formatDstDate(market.dstEnd) : '-'}</td>
                     <td>${market.dstStart ? formatDstDate(market.dstStart) : '-'}</td>
@@ -107,8 +100,6 @@ function formatDstDate(dateStr: string): string {
 // ============ Init ============
 async function init(): Promise<void> {
     initTheme();
-
-    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 
     const markets = await loadMarketsConfig();
     renderDSTTable(markets);

@@ -15,16 +15,7 @@ let pendingChanges: Map<string, TimeOverride> = new Map();
 function initTheme(): void {
     const savedTheme = localStorage.getItem('trading-clocks-theme');
     const isDark = savedTheme === 'dark';
-    document.body.classList.toggle('dark-mode', isDark);
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
-}
-
-function toggleTheme(): void {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    document.documentElement.classList.toggle('dark-mode', isDark);
 }
 
 /**
@@ -122,7 +113,7 @@ function renderTable(): void {
     const sortedMarkets = getMarketsSortedByOffset();
 
     const html = `
-        <table class="markets-table">
+        <table class="dst-table editor-table">
             <thead>
                 <tr>
                     <th>GMT</th>
@@ -157,9 +148,9 @@ function renderMarketRow(market: Market, overrides: TimeOverrides): string {
         <tr data-market-id="${market.id}">
             <td class="gmt-cell">${gmtOffset}</td>
             <td>
-                <div class="country-cell">
-                    <img class="country-flag" src="https://flagcdn.com/w40/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
-                    <span class="country-name">${market.country}</span>
+                <div class="dst-country-cell">
+                    <img class="market-item-flag" src="https://flagcdn.com/w40/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
+                    <span>${market.country}</span>
                 </div>
             </td>
             <td>
@@ -227,9 +218,6 @@ function setupEventListeners(): void {
 
     // Reset all button
     document.getElementById('btn-reset-all')?.addEventListener('click', resetAllChanges);
-
-    // Theme toggle button
-    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 }
 
 /**

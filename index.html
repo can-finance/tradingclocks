@@ -3,6 +3,17 @@
 
 <head>
   <meta charset="UTF-8" />
+
+  <!-- Theme Flash Prevention - Must run FIRST before any CSS loads -->
+  <script>
+    (function () {
+      const theme = localStorage.getItem('trading-clocks-theme');
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+      }
+    })();
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trading Clocks | Global Market Hours</title>
   <meta name="description"
@@ -28,7 +39,7 @@
     <!-- Sidebar -->
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header" style="justify-content: center; gap: 10px;">
+      <div class="sidebar-header">
         <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">◀</button>
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
       </div>

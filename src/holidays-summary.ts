@@ -9,16 +9,7 @@ import { getGMTOffset } from './timezone';
 function initTheme(): void {
     const savedTheme = localStorage.getItem('trading-clocks-theme');
     const isDark = savedTheme === 'dark';
-    document.body.classList.toggle('dark-mode', isDark);
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
-}
-
-function toggleTheme(): void {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    document.documentElement.classList.toggle('dark-mode', isDark);
 }
 
 // ============ Render Logic ============
@@ -149,8 +140,6 @@ function renderHolidaysTable(markets: Market[]): void {
 // ============ Init ============
 async function init(): Promise<void> {
     initTheme();
-
-    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 
     await loadHolidaysConfig();
     const markets = await loadMarketsConfig();

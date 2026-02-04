@@ -69,12 +69,12 @@ let elements: Elements;
 function initTheme(): void {
   const savedTheme = localStorage.getItem('trading-clocks-theme');
   const isDark = savedTheme === 'dark';
-  document.body.classList.toggle('dark-mode', isDark);
+  document.documentElement.classList.toggle('dark-mode', isDark);
   updateThemeIcon(isDark);
 }
 
 function toggleTheme(): void {
-  const isDark = document.body.classList.toggle('dark-mode');
+  const isDark = document.documentElement.classList.toggle('dark-mode');
   localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
   updateThemeIcon(isDark);
 }
@@ -109,7 +109,7 @@ async function init(): Promise<void> {
   elements = getElements();
 
   // Update theme icon after elements are loaded
-  updateThemeIcon(document.body.classList.contains('dark-mode'));
+  updateThemeIcon(document.documentElement.classList.contains('dark-mode'));
 
   // Load markets from config file
   await loadMarketsConfig();
@@ -174,6 +174,88 @@ function renderMarketSelector(): void {
   });
 }
 
+/**
+ * Render progress bar for trading day
+ */
+function renderProgressBar(
+  market: typeof markets[0],
+  status: ReturnType<typeof getMarketStatus>,
+  openDate: Date,
+  closeDate: Date
+): string {
+  const now = timeService.getNow();
+
+  // Don't show progress bar on weekends or holidays when closed
+  if (status.isWeekend || status.isTodayHoliday) {
+    return '';
+  }
+
+  // If market is closed, show filled bar (100%)
+  // This represents the last completed trading session
+  if (!status.isOpen && !status.isOnLunch) {
+    return `<div class="progress-bar-container">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" style="width: 100%;"></div>
+      </div>
+    </div>`;
+  }
+
+  // Check if market has lunch break
+  const hasLunch = market.lunchStart && market.lunchEnd && status.lunchStart && status.lunchEnd;
+
+  if (hasLunch && status.lunchStart && status.lunchEnd) {
+    // Segmented progress bar for markets with lunch
+    const morningDuration = status.lunchStart.getTime() - openDate.getTime();
+    const afternoonDuration = closeDate.getTime() - status.lunchEnd.getTime();
+    const totalTradingTime = morningDuration + afternoonDuration;
+
+    // Calculate segment widths as percentage of total trading time
+    const morningPercent = (morningDuration / totalTradingTime) * 100;
+    const afternoonPercent = (afternoonDuration / totalTradingTime) * 100;
+
+    // Calculate fill percentages
+    let morningFill = 0;
+    let afternoonFill = 0;
+
+    if (now >= openDate && now < status.lunchStart) {
+      // During morning session
+      const elapsed = now.getTime() - openDate.getTime();
+      morningFill = Math.min(100, (elapsed / morningDuration) * 100);
+    } else if (now >= status.lunchStart && now < status.lunchEnd) {
+      // On lunch break
+      morningFill = 100;
+    } else if (now >= status.lunchEnd && now < closeDate) {
+      // During afternoon session
+      morningFill = 100;
+      const elapsed = now.getTime() - status.lunchEnd.getTime();
+      afternoonFill = Math.min(100, (elapsed / afternoonDuration) * 100);
+    }
+
+    return `<div class="progress-bar-container">
+      <div class="progress-bar-track segmented">
+        <div class="progress-bar-segment" style="width: ${morningPercent}%;">
+          <div class="progress-bar-fill" style="width: ${morningFill}%;"></div>
+        </div>
+        <div class="progress-bar-gap"></div>
+        <div class="progress-bar-segment" style="width: ${afternoonPercent}%;">
+          <div class="progress-bar-fill" style="width: ${afternoonFill}%;"></div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    // Single progress bar for markets without lunch
+    const totalDuration = closeDate.getTime() - openDate.getTime();
+    const elapsed = now.getTime() - openDate.getTime();
+    const fillPercent = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+
+    return `<div class="progress-bar-container">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" style="width: ${fillPercent}%;"></div>
+      </div>
+    </div>`;
+  }
+}
+
 function renderClocks(): void {
   const selectedMarkets = markets.filter(m => selectedMarketIds.includes(m.id));
 
@@ -222,11 +304,17 @@ function renderClocks(): void {
     let statusClass = 'is-closed';
     let statusText = 'Closed';
 
-    if (status.isOpen) {
+    if (status.isOnLunch) {
+      statusClass = 'is-on-lunch';
+      statusText = 'Lunch Break';
+    } else if (status.isOpen) {
       // Check if closing soon (within 30 minutes)
-      if (status.timeUntil < 30 * 60 * 1000) {
+      if (status.timeUntil < 30 * 60 * 1000 && status.nextEvent === 'closes') {
         statusClass = 'is-closing-soon';
         statusText = 'Closing Soon';
+      } else if (status.nextEvent === 'lunch-starts' && status.timeUntil < 30 * 60 * 1000) {
+        statusClass = 'is-open';
+        statusText = 'Lunch Soon';
       } else {
         statusClass = 'is-open';
         statusText = 'Open';
@@ -250,9 +338,16 @@ function renderClocks(): void {
     const closeMarketTime = formatTimeInTimezone(closeDate, market.timezone);
     const closeUserTime = formatTimeInTimezone(closeDate, userTz);
 
-    // Countdown label
-    const countdownLabel = status.nextEvent === 'opens' ? 'Opens in' : 'Closes in';
+    // Countdown label based on next event
+    let countdownLabel = 'Opens in';
+    if (status.nextEvent === 'closes') countdownLabel = 'Closes in';
+    else if (status.nextEvent === 'lunch-starts') countdownLabel = 'Lunch in';
+    else if (status.nextEvent === 'reopens') countdownLabel = 'Reopens in';
+
     const countryCode = market.countryCode.toLowerCase();
+
+    // Calculate progress bar
+    const progressBarHtml = renderProgressBar(market, status, openDate, closeDate);
 
     html += `
       <div class="clock-card ${statusClass}" data-market-id="${market.id}">
@@ -291,6 +386,8 @@ function renderClocks(): void {
           <div class="countdown-label">${status.isTodayHoliday ? 'Reopens in' : countdownLabel}</div>
           <div class="countdown-value">${formatCountdown(status.timeUntil)}</div>
         </div>
+        
+        ${progressBarHtml}
         
         <div class="clock-schedule">
           <div class="schedule-column">

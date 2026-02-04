@@ -3,6 +3,17 @@
 
 <head>
     <meta charset="UTF-8" />
+
+    <!-- Theme Flash Prevention - Must run FIRST before any CSS loads -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('trading-clocks-theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DST Schedule | Trading Clocks</title>
     <meta name="description" content="Daylight Saving Time schedule for global stock markets." />
@@ -22,18 +33,17 @@
 <body>
     <div id="app">
         <!-- Main Content -->
-        <main class="main-content" style="margin-left: 0; width: 100%;">
+        <main class="main-content no-sidebar">
             <header class="header">
                 <div class="header-title">
                     <a href="index.html" class="header-back-link">← Back</a>
                     <h1>📅 DST Schedule (2026)</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
                 </div>
             </header>
 
-            <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 2rem;">
+            <div class="container">
                 <div class="card glass-panel">
                     <div id="dst-table-container">
                         <!-- Populated by JavaScript -->
