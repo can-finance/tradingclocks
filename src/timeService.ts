@@ -8,6 +8,7 @@ class TimeService {
     private clockOffset: number = 0; // Difference between simulated time and real time
     private isPaused: boolean = false;
     private frozenTime: number = 0; // Timestamp when paused
+    private timezoneOverride: string | null = null;
 
     private constructor() { }
 
@@ -29,6 +30,20 @@ class TimeService {
     }
 
     /**
+     * Set the simulated timezone (or null for local)
+     */
+    setTimezone(timezone: string | null): void {
+        this.timezoneOverride = timezone === 'local' ? null : timezone;
+    }
+
+    /**
+     * Get the active timezone (simulated or null)
+     */
+    getTimezone(): string | null {
+        return this.timezoneOverride;
+    }
+
+    /**
      * Set the simulated time to a specific date
      */
     setTime(date: Date): void {
@@ -47,6 +62,7 @@ class TimeService {
     reset(): void {
         this.clockOffset = 0;
         this.isPaused = false;
+        this.timezoneOverride = null;
     }
 
     /**
@@ -73,7 +89,7 @@ class TimeService {
     }
 
     isSimulationActive(): boolean {
-        return this.clockOffset !== 0 || this.isPaused;
+        return this.clockOffset !== 0 || this.isPaused || this.timezoneOverride !== null;
     }
 }
 

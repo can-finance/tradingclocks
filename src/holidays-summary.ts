@@ -66,7 +66,7 @@ function renderHolidaysTable(markets: Market[]): void {
         if (regionMarkets.length === 0) return;
 
         const regionId = region.toLowerCase().replace(/\s+/g, '-');
-        html += `<h2 class="dst-region-title" id="region-${regionId}" style="margin-bottom: 1rem; margin-top: 2rem; font-size: 1.25rem;">${region}</h2>`;
+        html += `<h2 class="dst-region-title holiday-region-title" id="region-${regionId}">${region}</h2>`;
 
         regionMarkets.forEach(market => {
             const holidays = getMarketHolidays(market.id, year);
@@ -76,23 +76,23 @@ function renderHolidaysTable(markets: Market[]): void {
             const marketId = market.id.toLowerCase();
 
             html += `
-                <div class="card glass-panel" id="market-${marketId}" style="margin-bottom: 1.25rem; padding: 1.25rem;">
-                    <div class="market-header" style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle);">
-                        <div style="flex: 1;">
-                            <h3 style="margin: 0; font-size: 1.15rem;">${market.name}</h3>
-                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-                                <img class="market-item-flag" src="https://flagcdn.com/w80/${countryCode}.png" alt="${market.country}" style="width: 24px; height: auto; border-radius: 2px;" />
-                                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">${market.code}</div>
+                <div class="card glass-panel holiday-card" id="market-${marketId}">
+                    <div class="market-header holiday-market-header">
+                        <div class="holiday-market-info">
+                            <h3 class="holiday-market-name">${market.name}</h3>
+                            <div class="holiday-market-meta">
+                                <img class="market-item-flag holiday-flag-small" src="https://flagcdn.com/w80/${countryCode}.png" alt="${market.country}" />
+                                <div class="holiday-market-code">${market.code}</div>
                             </div>
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="dst-table holidays-table">
+                        <table class="dst-table holidays-table compact-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 25%;">Date</th>
-                                    <th style="width: 50%;">Holiday</th>
-                                    <th style="width: 25%;">Status</th>
+                                    <th>Date</th>
+                                    <th>Holiday</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -113,13 +113,13 @@ function renderHolidaysTable(markets: Market[]): void {
                 if (holiday.status === 'closed') {
                     statusBadge = '<span class="badge badge-neutral">Closed</span>';
                 } else if (holiday.status === 'early-close') {
-                    statusBadge = `<span class="badge badge-active">Early Close<br><span style="font-size: 0.65rem;">${holiday.closeTime || ''}</span></span>`;
+                    statusBadge = `<span class="badge badge-active">Early Close<br><span class="badge-close-time">${holiday.closeTime || ''}</span></span>`;
                 }
 
                 html += `
                     <tr>
-                        <td style="font-family: var(--font-mono); font-size: 0.85rem;">${formattedDate}</td>
-                        <td style="font-weight: 500;">${holiday.name}</td>
+                        <td class="time-cell holiday-date-cell">${formattedDate}</td>
+                        <td class="holiday-name-cell">${holiday.name}</td>
                         <td>${statusBadge}</td>
                     </tr>
                 `;

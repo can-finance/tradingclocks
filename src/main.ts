@@ -437,7 +437,7 @@ function updateLocalTime(): void {
   const timeWithSeconds = `${timeStr}:${seconds}${period}`;
 
   elements.localTime.textContent = timeWithSeconds;
-  elements.localDate.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  elements.localDate.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: userTz });
   elements.localTz.textContent = tzAbbrev;
 
   // Update Time Travel Indicator

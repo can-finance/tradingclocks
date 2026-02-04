@@ -136,8 +136,8 @@ function renderScheduleTable(markets: Market[]): void {
                         <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
                         <span>${market.country}</span>
                     </td>
-                    <td style="font-family: var(--font-mono); font-weight: 500;">${openFmt.time} <span style="font-size:0.75em; color:var(--text-muted)">${openFmt.tzAbbrev}</span></td>
-                    <td style="font-family: var(--font-mono); font-weight: 500;">${closeFmt.time} <span style="font-size:0.75em; color:var(--text-muted)">${closeFmt.tzAbbrev}</span></td>
+                    <td class="time-cell">${openFmt.time} <span class="tz-abbrev">${openFmt.tzAbbrev}</span></td>
+                    <td class="time-cell">${closeFmt.time} <span class="tz-abbrev">${closeFmt.tzAbbrev}</span></td>
                     <td>${hours}h ${mins > 0 ? mins + 'm' : ''}</td>
                 </tr>
             `;

@@ -353,6 +353,8 @@ export function formatTimeInTimezone(date: Date, timezone: string): FormattedTim
  * Get user's local timezone
  */
 export function getUserTimezone(): string {
+    const override = timeService.getTimezone();
+    if (override) return override;
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 

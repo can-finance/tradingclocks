@@ -6,7 +6,9 @@ export class DebugUI {
     private container: HTMLElement;
     private dateInput: HTMLInputElement;
     private timeInput: HTMLInputElement;
+    private timezoneSelect: HTMLSelectElement;
     private nowDisplay: HTMLElement;
+    private currentTimezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     constructor() {
         this.container = document.createElement('div');
@@ -24,6 +26,23 @@ export class DebugUI {
                 <div class="debug-row">
                     <label>Simulated Time</label>
                     <input type="time" id="debug-time" step="1">
+                </div>
+                <div class="debug-row">
+                    <label>View Timezone</label>
+                    <select id="debug-timezone">
+                        <option value="local">Local Time</option>
+                        <option value="America/New_York">New York (EST/EDT)</option>
+                        <option value="America/Chicago">Chicago (CST/CDT)</option>
+                        <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                        <option value="Europe/London">London (GMT/BST)</option>
+                        <option value="Europe/Paris">Paris (CET/CEST)</option>
+                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                        <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
+                        <option value="Asia/Shanghai">Shanghai (CST)</option>
+                        <option value="Asia/Singapore">Singapore (SGT)</option>
+                        <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                        <option value="UTC">UTC</option>
+                    </select>
                 </div>
                 <div class="debug-actions">
                     <button id="debug-set" class="btn-debug-primary">Set Time</button>
@@ -78,13 +97,17 @@ export class DebugUI {
             .debug-row label {
                 display: block; font-size: 0.75rem; margin-bottom: 0.25rem; color: #888;
             }
-            .debug-row input {
+            .debug-row input, .debug-row select {
                 width: 100%;
                 background: rgba(255,255,255,0.1);
                 border: 1px solid rgba(255,255,255,0.2);
                 color: #fff;
                 padding: 0.5rem;
                 border-radius: 4px;
+            }
+            .debug-row select option {
+                background: #1a1a2e;
+                color: #fff;
             }
             .debug-actions {
                 display: flex; gap: 0.5rem; margin-bottom: 1rem;
@@ -114,7 +137,11 @@ export class DebugUI {
         // Get elements
         this.dateInput = this.container.querySelector('#debug-date') as HTMLInputElement;
         this.timeInput = this.container.querySelector('#debug-time') as HTMLInputElement;
+        this.timezoneSelect = this.container.querySelector('#debug-timezone') as HTMLSelectElement;
         this.nowDisplay = this.container.querySelector('#debug-current-time') as HTMLElement;
+
+        // Set default timezone
+        this.timezoneSelect.value = 'local';
 
         this.setupListeners();
 
@@ -140,8 +167,29 @@ export class DebugUI {
             }
         });
 
+        if (this.container.style.display === 'none') {
+            // When hidden, still ensuring default is clear could be good, but
+            // let's wait until interaction.
+        }
+
         document.getElementById('debug-reset')?.addEventListener('click', () => {
             timeService.reset();
+            this.updateDisplay();
+            // Reset dropdown too
+            this.timezoneSelect.value = 'local';
+        });
+
+        this.timezoneSelect.addEventListener('change', () => {
+            const selectedTz = this.timezoneSelect.value;
+            // Update service
+            timeService.setTimezone(selectedTz);
+
+            // Also update local state for display format
+            this.currentTimezone = selectedTz === 'local'
+                ? Intl.DateTimeFormat().resolvedOptions().timeZone
+                : selectedTz;
+
+            this.updateDisplay();
         });
 
         this.container.querySelectorAll('.btn-shortcut').forEach(btn => {
@@ -184,7 +232,21 @@ export class DebugUI {
         if (this.container.style.display === 'none') return;
 
         const now = timeService.getNow();
-        this.nowDisplay.textContent = now.toLocaleString();
+
+        // Format time in selected timezone
+        const tzOptions: Intl.DateTimeFormatOptions = {
+            timeZone: this.currentTimezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+
+        const formatter = new Intl.DateTimeFormat('en-US', tzOptions);
+        this.nowDisplay.textContent = formatter.format(now) + ' (' + this.getTimezoneAbbrev() + ')';
 
         // Update inputs only if not focused (to allow editing)
         if (document.activeElement !== this.dateInput && document.activeElement !== this.timeInput) {
@@ -199,6 +261,26 @@ export class DebugUI {
             this.dateInput.value = `${yyyy}-${mm}-${dd}`;
             this.timeInput.value = `${hh}:${min}:${ss}`;
         }
+    }
+
+    private getTimezoneAbbrev(): string {
+        if (this.currentTimezone === Intl.DateTimeFormat().resolvedOptions().timeZone) {
+            return 'Local';
+        }
+        const tzMap: Record<string, string> = {
+            'America/New_York': 'EST/EDT',
+            'America/Chicago': 'CST/CDT',
+            'America/Los_Angeles': 'PST/PDT',
+            'Europe/London': 'GMT/BST',
+            'Europe/Paris': 'CET/CEST',
+            'Asia/Tokyo': 'JST',
+            'Asia/Hong_Kong': 'HKT',
+            'Asia/Shanghai': 'CST',
+            'Asia/Singapore': 'SGT',
+            'Australia/Sydney': 'AEDT/AEST',
+            'UTC': 'UTC'
+        };
+        return tzMap[this.currentTimezone] || this.currentTimezone;
     }
 
     toggle(show?: boolean): void {

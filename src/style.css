@@ -1,4 +1,4 @@
-/* ======================================
+﻿/* ======================================
    TRADING CLOCKS - DESIGN SYSTEM
    Light/Dark Mode Theme
    ====================================== */
@@ -869,6 +869,179 @@ h3 {
 .is-closed .progress-bar-fill {
   background: #6b7280;
   opacity: 0.6;
+}
+
+/* -------- Buttons -------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-glass);
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-glass-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+/* -------- Toast Notifications -------- */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition: all var(--transition-base);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.success {
+  border-color: var(--status-open);
+}
+
+.toast.error {
+  border-color: var(--status-closed);
+}
+
+/* -------- Compact Table Variant -------- */
+.compact-table td,
+.compact-table th {
+  padding: 0.5rem 0.75rem;
+}
+
+.compact-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* -------- Page-Specific Components -------- */
+
+/* Holiday Page */
+.holiday-region-title {
+  margin-bottom: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+  font-size: 1.25rem;
+}
+
+.holiday-card {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+}
+
+.holiday-market-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.holiday-market-info {
+  flex: 1;
+}
+
+.holiday-market-name {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.holiday-market-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.holiday-flag-small {
+  width: 24px;
+  height: auto;
+  border-radius: 2px;
+}
+
+.holiday-market-code {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Badge modifiers */
+.badge-close-time {
+  font-size: 0.65rem;
+}
+
+/* Holiday table cells */
+.holiday-date-cell {
+  font-size: 0.85rem;
+}
+
+.holiday-name-cell {
+  font-weight: 500;
+}
+
+/* Table Cell Utilities */
+.time-cell {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.time-cell .tz-abbrev {
+  font-size: 0.75em;
+  color: var(--text-muted);
+}
+
+/* Holidays Table Column Widths */
+.holidays-table th:nth-child(1),
+.holidays-table td:nth-child(1) {
+  width: 25%;
+}
+
+.holidays-table th:nth-child(2),
+.holidays-table td:nth-child(2) {
+  width: 50%;
+}
+
+.holidays-table th:nth-child(3),
+.holidays-table td:nth-child(3) {
+  width: 25%;
 }
 
 /* Schedule Display */
