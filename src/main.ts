@@ -66,13 +66,6 @@ function getElements(): Elements {
 let elements: Elements;
 
 // ============ Theme ============
-function initTheme(): void {
-  const savedTheme = localStorage.getItem('trading-clocks-theme');
-  const isDark = savedTheme === 'dark';
-  document.documentElement.classList.toggle('dark-mode', isDark);
-  updateThemeIcon(isDark);
-}
-
 function toggleTheme(): void {
   const isDark = document.documentElement.classList.toggle('dark-mode');
   localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
@@ -102,11 +95,8 @@ function toggleSidebar(): void {
 
 // ============ Initialization ============
 async function init(): Promise<void> {
-  // Initialize theme before getting elements
-  initTheme();
-  initSidebar();
-
   elements = getElements();
+  initSidebar();
 
   // Update theme icon after elements are loaded
   updateThemeIcon(document.documentElement.classList.contains('dark-mode'));
@@ -145,8 +135,24 @@ function renderMarketSelector(): void {
     const regionMarkets = grouped[region] || [];
     if (regionMarkets.length === 0) continue;
 
+    // Calculate region selection state
+    const regionMarketIds = regionMarkets.map(m => m.id);
+    const selectedInRegion = regionMarketIds.filter(id => selectedMarketIds.includes(id));
+    const allSelected = selectedInRegion.length === regionMarketIds.length;
+    const noneSelected = selectedInRegion.length === 0;
+    const indeterminate = !allSelected && !noneSelected;
+
     html += `<div class="region-group">`;
-    html += `<div class="region-title">${region}</div>`;
+    html += `
+      <div class="region-header">
+        <input type="checkbox" 
+               class="custom-checkbox region-checkbox"
+               data-region="${region}"
+               ${allSelected ? 'checked' : ''}
+               ${indeterminate ? 'data-indeterminate="true"' : ''} />
+        <div class="region-title">${region}</div>
+      </div>
+    `;
 
     for (const market of regionMarkets) {
       const isChecked = selectedMarketIds.includes(market.id);
@@ -154,7 +160,9 @@ function renderMarketSelector(): void {
       html += `
         <label class="market-item">
           <input type="checkbox" 
-                 data-market-id="${market.id}" 
+                 class="custom-checkbox market-checkbox"
+                 data-market-id="${market.id}"
+                 data-region="${region}"
                  ${isChecked ? 'checked' : ''} />
           <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
           <span class="market-item-name">${market.country}</span>
@@ -168,9 +176,19 @@ function renderMarketSelector(): void {
 
   elements.marketSelector.innerHTML = html;
 
-  // Add change listeners to checkboxes
-  elements.marketSelector.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+  // Set indeterminate state for region checkboxes (must be done via JS, not HTML)
+  elements.marketSelector.querySelectorAll('.region-checkbox[data-indeterminate="true"]').forEach(cb => {
+    (cb as HTMLInputElement).indeterminate = true;
+  });
+
+  // Add change listeners to market checkboxes
+  elements.marketSelector.querySelectorAll('.market-checkbox').forEach(cb => {
     cb.addEventListener('change', handleMarketToggle);
+  });
+
+  // Add change listeners to region checkboxes
+  elements.marketSelector.querySelectorAll('.region-checkbox').forEach(cb => {
+    cb.addEventListener('change', handleRegionToggle);
   });
 }
 
@@ -507,6 +525,33 @@ function handleMarketToggle(e: Event): void {
   }
 
   saveSelectedMarkets(selectedMarketIds);
+  renderMarketSelector(); // Re-render to update region checkbox state
+  renderClocks();
+}
+
+function handleRegionToggle(e: Event): void {
+  const target = e.target as HTMLInputElement;
+  const region = target.dataset.region as 'Americas' | 'Europe' | 'Asia-Pacific';
+  if (!region) return;
+
+  const grouped = getMarketsByRegion();
+  const regionMarkets = grouped[region] || [];
+  const regionMarketIds = regionMarkets.map(m => m.id);
+
+  if (target.checked) {
+    // Select all markets in this region
+    regionMarketIds.forEach(id => {
+      if (!selectedMarketIds.includes(id)) {
+        selectedMarketIds.push(id);
+      }
+    });
+  } else {
+    // Deselect all markets in this region
+    selectedMarketIds = selectedMarketIds.filter(id => !regionMarketIds.includes(id));
+  }
+
+  saveSelectedMarkets(selectedMarketIds);
+  renderMarketSelector();
   renderClocks();
 }
 

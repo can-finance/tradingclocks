@@ -64,6 +64,175 @@
                 "status": "closed"
             }
         ],
+        "twse": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-12",
+                "name": "Lunar New Year - No Trading",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-13",
+                "name": "Lunar New Year - No Trading",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-16",
+                "name": "Lunar New Year's Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-17",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-18",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-19",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-20",
+                "name": "Lunar New Year (Adjusted)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-27",
+                "name": "Peace Memorial Day (Adjusted)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-03",
+                "name": "Children's Day/Tomb-Sweeping Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-04-06",
+                "name": "Children's Day/Tomb-Sweeping Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labor Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-06-19",
+                "name": "Dragon Boat Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-25",
+                "name": "Mid-Autumn Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-28",
+                "name": "Teachers' Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-09",
+                "name": "National Day (Adjusted)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-26",
+                "name": "Taiwan Restoration Day (Adjusted)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Constitution Day",
+                "status": "closed"
+            }
+        ],
+        "krx": [
+            {
+                "date": "2026-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-16",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-17",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-02-18",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2026-03-02",
+                "name": "Independence Movement Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-01",
+                "name": "Labor Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-05",
+                "name": "Children's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-05-25",
+                "name": "Buddha's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-08-17",
+                "name": "Liberation Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-24",
+                "name": "Chuseok (Harvest Festival)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-09-25",
+                "name": "Chuseok (Harvest Festival)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-05",
+                "name": "National Foundation Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2026-10-09",
+                "name": "Hangul Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2026-12-31",
+                "name": "End of Year Market Close",
+                "status": "closed"
+            }
+        ],
         "nasdaq": "nyse",
         "euronext-paris": [
             {

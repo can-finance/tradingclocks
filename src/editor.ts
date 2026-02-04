@@ -11,18 +11,10 @@ let markets: Market[] = [];
 let originalMarkets: Map<string, Market> = new Map();
 let pendingChanges: Map<string, TimeOverride> = new Map();
 
-// ============ Theme Logic (Shared) ============
-function initTheme(): void {
-    const savedTheme = localStorage.getItem('trading-clocks-theme');
-    const isDark = savedTheme === 'dark';
-    document.documentElement.classList.toggle('dark-mode', isDark);
-}
-
 /**
  * Initialize the editor
  */
 async function init(): Promise<void> {
-    initTheme();
     await loadMarkets();
     renderTable();
     setupEventListeners();

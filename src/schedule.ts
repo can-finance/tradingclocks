@@ -4,60 +4,9 @@ import { loadMarketsConfig } from './markets';
 import type { Market } from './types';
 import { formatTimeInTimezone, getUserTimezone } from './timezone';
 import { timeService } from './timeService';
+import { getNextWeekday, getDateFromIsoInTz } from './dateUtils';
+import { REGIONS } from './constants';
 
-// ============ Theme Logic (Shared) ============
-function initTheme(): void {
-    const savedTheme = localStorage.getItem('trading-clocks-theme');
-    const isDark = savedTheme === 'dark';
-    document.documentElement.classList.toggle('dark-mode', isDark);
-}
-
-// ============ Date Utilities ============
-
-/**
- * Returns the next weekday (Mon-Fri) after the given date.
- */
-function getNextWeekday(date: Date): Date {
-    const d = new Date(date);
-    d.setDate(d.getDate() + 1); // Start with tomorrow
-    while (d.getDay() === 0 || d.getDay() === 6) {
-        d.setDate(d.getDate() + 1);
-    }
-    return d;
-}
-
-/**
- * Converts an ISO datetime string (e.g., "2026-02-05T09:30:00") interpreted
- * as local time in the specified timezone into a UTC Date object.
- */
-function getDateFromIsoInTz(isoStr: string, timezone: string): Date {
-    // Treat isoStr as UTC first to get a reference point
-    const utcAssume = new Date(isoStr + 'Z');
-
-    // Format this UTC time as if it were in the target timezone
-    const fmt = new Intl.DateTimeFormat('en-US', {
-        timeZone: timezone,
-        hour: '2-digit', minute: '2-digit',
-        hour12: false
-    });
-
-    const parts = fmt.formatToParts(utcAssume);
-    const getPart = (type: string) => parseInt(parts.find(p => p.type === type)?.value || '0');
-
-    // Calculate offset: what time does the target TZ show vs UTC?
-    const targetH = utcAssume.getUTCHours();
-    const targetM = utcAssume.getUTCMinutes();
-    const actualH = getPart('hour');
-    const actualM = getPart('minute');
-
-    // Offset in minutes (positive = ahead of UTC)
-    let diffMins = (actualH * 60 + actualM) - (targetH * 60 + targetM);
-    if (diffMins > 720) diffMins -= 1440;
-    if (diffMins < -720) diffMins += 1440;
-
-    // Adjust to get the correct UTC time for the given local time
-    return new Date(utcAssume.getTime() - diffMins * 60000);
-}
 
 // ============ Rendering ============
 
@@ -88,7 +37,7 @@ function renderScheduleTable(markets: Market[]): void {
         </div>
     `;
 
-    const regions = ['Asia-Pacific', 'Europe', 'Americas'];
+    const regions = REGIONS;
 
     regions.forEach(region => {
         const regionCountries = countries.filter(m => m.region === region);
@@ -102,11 +51,13 @@ function renderScheduleTable(markets: Market[]): void {
                     <th>Country</th>
                     <th>Opens <span class="sub-header">(Local Time)</span></th>
                     <th>Closes <span class="sub-header">(Local Time)</span></th>
+                    <th>Lunch Break</th>
                     <th>Duration</th>
                 </tr>
             </thead>
             <tbody>
         `;
+
 
         regionCountries.forEach(market => {
             const countryCode = market.countryCode.toLowerCase();
@@ -126,7 +77,25 @@ function renderScheduleTable(markets: Market[]): void {
             const closeFmt = formatTimeInTimezone(closeDate, userTz);
 
             // Calculate duration
-            const diffMs = closeDate.getTime() - openDate.getTime();
+            let diffMs = closeDate.getTime() - openDate.getTime();
+            let lunchHtml = '-';
+
+            // Handle Lunch Break
+            if (market.lunchStart && market.lunchEnd) {
+                const lunchStart = getDateFromIsoInTz(`${dateStr}T${market.lunchStart}:00`, market.timezone);
+                const lunchEnd = getDateFromIsoInTz(`${dateStr}T${market.lunchEnd}:00`, market.timezone);
+
+                // Subtract lunch duration
+                const lunchDuration = lunchEnd.getTime() - lunchStart.getTime();
+                diffMs -= lunchDuration;
+
+                // Format lunch times
+                const lunchStartFmt = formatTimeInTimezone(lunchStart, userTz);
+                const lunchEndFmt = formatTimeInTimezone(lunchEnd, userTz);
+
+                lunchHtml = `${lunchStartFmt.time} <span class="tz-abbrev">${lunchStartFmt.tzAbbrev}</span> - ${lunchEndFmt.time} <span class="tz-abbrev">${lunchEndFmt.tzAbbrev}</span>`;
+            }
+
             const hours = Math.floor(diffMs / (1000 * 60 * 60));
             const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
@@ -138,7 +107,8 @@ function renderScheduleTable(markets: Market[]): void {
                     </td>
                     <td class="time-cell">${openFmt.time} <span class="tz-abbrev">${openFmt.tzAbbrev}</span></td>
                     <td class="time-cell">${closeFmt.time} <span class="tz-abbrev">${closeFmt.tzAbbrev}</span></td>
-                    <td>${hours}h ${mins > 0 ? mins + 'm' : ''}</td>
+                    <td class="lunch-cell">${lunchHtml}</td>
+                    <td class="duration-cell">${hours}h ${mins > 0 ? mins + 'm' : ''}</td>
                 </tr>
             `;
         });
@@ -151,7 +121,6 @@ function renderScheduleTable(markets: Market[]): void {
 
 // ============ Init ============
 async function init(): Promise<void> {
-    initTheme();
     const markets = await loadMarketsConfig();
     renderScheduleTable(markets);
 }

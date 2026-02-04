@@ -88,3 +88,16 @@ export function getUniqueCountries(): Country[] {
 export function getMarketById(id: string): Market | undefined {
     return markets.find(m => m.id === id);
 }
+
+/**
+ * Get unique markets per country (eliminates duplicates like NYSE/NASDAQ)
+ */
+export function getUniqueMarketsPerCountry(marketList: Market[] = markets): Market[] {
+    const uniqueCountries = new Map<string, Market>();
+    marketList.forEach(m => {
+        if (!uniqueCountries.has(m.country)) {
+            uniqueCountries.set(m.country, m);
+        }
+    });
+    return Array.from(uniqueCountries.values());
+}

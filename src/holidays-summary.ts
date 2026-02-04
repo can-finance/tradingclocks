@@ -4,13 +4,7 @@ import { loadMarketsConfig } from './markets';
 import { loadHolidaysConfig, getMarketHolidays } from './holidays';
 import type { Market } from './types';
 import { getGMTOffset } from './timezone';
-
-// ============ Theme Logic (Shared) ============
-function initTheme(): void {
-    const savedTheme = localStorage.getItem('trading-clocks-theme');
-    const isDark = savedTheme === 'dark';
-    document.documentElement.classList.toggle('dark-mode', isDark);
-}
+import { REGIONS } from './constants';
 
 // ============ Render Logic ============
 function renderHolidaysTable(markets: Market[]): void {
@@ -18,7 +12,7 @@ function renderHolidaysTable(markets: Market[]): void {
     if (!container) return;
 
     const year = 2026;
-    const regions = ['Asia-Pacific', 'Europe', 'Americas'];
+    const regions = REGIONS;
 
     // Render navigation
     const navContainer = document.getElementById('holidays-nav');
@@ -139,8 +133,6 @@ function renderHolidaysTable(markets: Market[]): void {
 
 // ============ Init ============
 async function init(): Promise<void> {
-    initTheme();
-
     await loadHolidaysConfig();
     const markets = await loadMarketsConfig();
     renderHolidaysTable(markets);

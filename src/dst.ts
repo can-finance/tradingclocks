@@ -2,15 +2,9 @@
 import './style.css';
 import { loadMarketsConfig } from './markets';
 import type { Market } from './types';
-
 import { getGMTOffset } from './timezone';
-
-// ============ Theme Logic (Shared) ============
-function initTheme(): void {
-    const savedTheme = localStorage.getItem('trading-clocks-theme');
-    const isDark = savedTheme === 'dark';
-    document.documentElement.classList.toggle('dark-mode', isDark);
-}
+import { formatDstDate } from './dateUtils';
+import { REGIONS } from './constants';
 
 // ============ Render Logic ============
 function renderDSTTable(markets: Market[]): void {
@@ -28,7 +22,7 @@ function renderDSTTable(markets: Market[]): void {
     const countries = Array.from(uniqueCountries.values());
 
     // Group by region
-    const regions = ['Asia-Pacific', 'Europe', 'Americas'];
+    const regions = REGIONS;
     let html = '';
 
     regions.forEach(region => {
@@ -90,17 +84,9 @@ function renderDSTTable(markets: Market[]): void {
     container.innerHTML = html;
 }
 
-function formatDstDate(dateStr: string): string {
-    if (!dateStr) return '-';
-    // dateStr is YYYY-MM-DD
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 // ============ Init ============
 async function init(): Promise<void> {
-    initTheme();
-
     const markets = await loadMarketsConfig();
     renderDSTTable(markets);
 }

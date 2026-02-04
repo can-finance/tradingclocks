@@ -284,17 +284,79 @@ h3 {
   margin-bottom: var(--spacing-md);
 }
 
+.region-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 4px var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.region-header:hover {
+  background: var(--bg-glass-hover);
+}
+
 .region-title {
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
-  margin-bottom: var(--spacing-xs);
-  padding: 0 var(--spacing-sm);
+  flex: 1;
 }
 
 /* Market Checkboxes */
+/* Base checkbox styling (shared between market and region) */
+.custom-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-glass);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.custom-checkbox:checked {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.custom-checkbox:indeterminate {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.custom-checkbox:indeterminate::after {
+  content: '−';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1;
+}
+
 .market-item {
   display: flex;
   align-items: center;
@@ -309,35 +371,7 @@ h3 {
   background: var(--bg-glass-hover);
 }
 
-.market-item input[type="checkbox"] {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border-glass);
-  border-radius: 4px;
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-  position: relative;
-}
 
-.market-item input[type="checkbox"]:checked {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-}
-
-.market-item input[type="checkbox"]:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 1;
-}
 
 .market-item-flag {
   width: 20px;
@@ -1026,6 +1060,56 @@ h3 {
 .time-cell .tz-abbrev {
   font-size: 0.75em;
   color: var(--text-muted);
+}
+
+/* Schedule Table Column Widths - Fixed for consistent alignment */
+.dst-table th:nth-child(1),
+.dst-table td:nth-child(1) {
+  width: 22%;
+  min-width: 150px;
+}
+
+.dst-table th:nth-child(2),
+.dst-table td:nth-child(2) {
+  width: 19%;
+  min-width: 120px;
+}
+
+.dst-table th:nth-child(3),
+.dst-table td:nth-child(3) {
+  width: 19%;
+  min-width: 120px;
+}
+
+.dst-table th:nth-child(4),
+.dst-table td:nth-child(4) {
+  width: 20%;
+  min-width: 135px;
+  text-align: center;
+}
+
+.dst-table th:nth-child(5),
+.dst-table td:nth-child(5) {
+  width: 12%;
+  min-width: 75px;
+}
+
+/* Lunch Break Cell Styling */
+.lunch-cell {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-align: center;
+}
+
+.lunch-cell .tz-abbrev {
+  font-size: 0.75em;
+  color: var(--text-muted);
+}
+
+.duration-cell {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Holidays Table Column Widths */
