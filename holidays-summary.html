@@ -10,6 +10,8 @@
             const theme = localStorage.getItem('trading-clocks-theme');
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark-mode');
+                // Set inline style for instant background color
+                document.documentElement.style.backgroundColor = '#0a0a0f';
             }
         })();
     </script>
