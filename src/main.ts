@@ -3,7 +3,9 @@
  */
 
 import './style.css';
-import './debug'; // Initialize Debug UI
+if (import.meta.env.DEV) {
+  import('./debug'); // Initialize Debug UI only in development
+}
 import { markets, getMarketsByRegion, loadMarketsConfig } from './markets';
 import { loadHolidaysConfig } from './holidays';
 import {
