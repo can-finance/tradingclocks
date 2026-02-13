@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    // Use the repository name as the base path for GitHub Pages
-    base: '/tradingclocks/',
+    // Use root base path for custom domain
+    base: '/',
     build: {
         rollupOptions: {
             input: {
