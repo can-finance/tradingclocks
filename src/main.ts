@@ -502,6 +502,14 @@ function setupEventListeners(): void {
     elements.sidebarOverlay.classList.remove('is-active');
   });
 
+  // Close sidebar when clicking a nav link
+  document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      elements.sidebar.classList.remove('is-open');
+      elements.sidebarOverlay.classList.remove('is-active');
+    });
+  });
+
   // Keyboard shortcuts
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape') {

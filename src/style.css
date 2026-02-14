@@ -186,7 +186,7 @@ h3 {
 }
 
 .sidebar.is-collapsed {
-  width: 60px;
+  width: 50px;
 }
 
 .sidebar.is-collapsed .sidebar-content,
@@ -199,7 +199,8 @@ h3 {
 }
 
 .sidebar-header {
-  padding: 0.875rem var(--spacing-md);
+  height: var(--header-height);
+  padding: 0 var(--spacing-md);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -442,7 +443,7 @@ h3 {
 }
 
 .sidebar.is-collapsed~.sidebar-overlay~.main-content {
-  margin-left: 60px;
+  margin-left: 50px;
 }
 
 /* Header */
@@ -672,6 +673,8 @@ h3 {
   background: #fbbf24;
   opacity: 0.8;
 }
+
+
 
 /* Card Header */
 .clock-header {
@@ -1599,4 +1602,214 @@ h3 {
 .footer-disclaimer {
   font-size: 0.75rem;
   opacity: 0.8;
+}
+
+/* -------- Mobile Navigation -------- */
+.sidebar-nav {
+  display: none;
+  /* Hidden on desktop */
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sidebar-nav-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.05em;
+}
+
+.sidebar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  margin-bottom: 2px;
+}
+
+.sidebar-nav-link:hover {
+  background: var(--bg-glass-hover);
+  color: var(--text-primary);
+}
+
+/* -------- Mobile Optimizations -------- */
+@media (max-width: 768px) {
+
+  /* Header Layout */
+  .header {
+    padding: 0 var(--spacing-md);
+    height: auto;
+    min-height: var(--header-height);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    /* Center content on mobile */
+  }
+
+  .header-title {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-title h1 {
+    font-size: 1.25rem;
+    /* Smaller title */
+  }
+
+  /* Hide Desktop Nav Links */
+  .header-editor-link {
+    display: none;
+  }
+
+  /* Show Menu Toggle */
+  .menu-toggle {
+    display: block;
+  }
+
+  /* Hide Sidebar Collapse Button (Functionality replaced by menu) */
+  .sidebar-toggle {
+    display: none;
+  }
+
+  /* Header Time - Make compact */
+  .header-time {
+    display: none;
+    /* Hide time in header on mobile to save space, user has local time usually */
+  }
+
+  /* If user wants time, we can make it very small:
+  .header-time { gap: var(--spacing-sm); }
+  .local-time-label { display: none; }
+  .local-time-value { font-size: 1rem; }
+  .local-date { display: none; }
+  */
+
+  /* Show Sidebar Nav */
+  .sidebar-nav {
+    display: block;
+  }
+
+  /* Main Layout */
+  .sidebar {
+    transform: translateX(-100%);
+    /* Hidden by default on mobile */
+    width: 260px;
+    /* Slightly wider for touch */
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    /* Enabled for mobile interaction */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+  }
+
+  .sidebar-overlay.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Clock Grid */
+  .clock-grid {
+    padding: var(--spacing-md);
+    grid-template-columns: 1fr;
+    /* Single column */
+  }
+
+  /* Data Tables (DST / Schedule) */
+  .dst-table th,
+  .dst-table td {
+    padding: 0.5rem 0.25rem;
+    /* Tighter padding */
+    font-size: 0.8rem;
+    /* Smaller font */
+  }
+
+  .dst-table th {
+    white-space: normal;
+    /* Allow headers to wrap */
+  }
+
+  .sub-header {
+    display: none;
+    /* Hide sub-headers to save space */
+  }
+
+  .badge {
+    padding: 2px 6px;
+    font-size: 0.7rem;
+  }
+
+  /* Hide less important columns if needed, but for now try to fit */
+  /* If table is still too wide, we can scroll */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    width: calc(100% + 2rem);
+  }
+
+  .holidays-nav-region {
+    display: none;
+    /* Hide region headers in horizontal scroll */
+  }
+
+  .holidays-nav-link {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    background: var(--bg-secondary);
+  }
+
+  .holidays-nav-link.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+  }
+
+  .holidays-nav-link span {
+    display: inline-block;
+    /* Ensure text is visible */
+  }
+
+  .schedule-intro {
+    font-size: 0.85rem;
+    padding: var(--spacing-md);
+  }
+
+  .holiday-market-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .holiday-market-name {
+    font-size: 1rem;
+  }
 }
