@@ -1599,6 +1599,20 @@ h3 {
   color: var(--text-secondary);
 }
 
+.footer-feedback {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.footer-feedback a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.footer-feedback a:hover {
+  text-decoration: underline;
+}
+
 .footer-disclaimer {
   font-size: 0.75rem;
   opacity: 0.8;
