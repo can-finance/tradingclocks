@@ -52,21 +52,19 @@ export function parseTimeInTimezone(timeStr: string, timezone: string): Date {
         hour12: false
     });
 
-    // Parse what time it would be in the target timezone when it's tempDate in UTC
+    // Parse what date/time it would be in the target timezone when it's tempDate in UTC
     const tzParts = targetFormatter.formatToParts(tempDate);
+    const tzYear = parseInt(tzParts.find(p => p.type === 'year')?.value || '0');
+    const tzMonth = parseInt(tzParts.find(p => p.type === 'month')?.value || '0');
+    const tzDay = parseInt(tzParts.find(p => p.type === 'day')?.value || '0');
     const tzHour = parseInt(tzParts.find(p => p.type === 'hour')?.value || '0');
     const tzMinute = parseInt(tzParts.find(p => p.type === 'minute')?.value || '0');
 
-    // Calculate offset in minutes: target_local = UTC + offset
-    // So if UTC is 12:00 and target shows 7:00, offset is -5 hours (-300 minutes)
-    const tempHours = tempDate.getUTCHours();
-    const tempMinutes = tempDate.getUTCMinutes();
-
-    let offsetMinutes = (tzHour * 60 + tzMinute) - (tempHours * 60 + tempMinutes);
-
-    // Handle day boundary crossings
-    if (offsetMinutes > 720) offsetMinutes -= 1440;
-    if (offsetMinutes < -720) offsetMinutes += 1440;
+    // Calculate offset using both date and time components to avoid day-boundary ambiguity
+    // (e.g., GMT+12 vs GMT-12 are indistinguishable from hour/minute difference alone)
+    const utcMs = Date.UTC(tempDate.getUTCFullYear(), tempDate.getUTCMonth(), tempDate.getUTCDate(), tempDate.getUTCHours(), tempDate.getUTCMinutes());
+    const tzMs = Date.UTC(tzYear, tzMonth - 1, tzDay, tzHour, tzMinute);
+    const offsetMinutes = (tzMs - utcMs) / (60 * 1000);
 
     // Now create the correct UTC time
     // We want: targetLocalTime = UTC + offset
