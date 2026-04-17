@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 50" width="380" height="50">
+  <g>
+    <circle cx="25" cy="25" r="23" fill="none" stroke="#0a0a0f" stroke-width="1.75"></circle>
+    <line x1="25" y1="5" x2="25" y2="10" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round"></line>
+    <line x1="25" y1="40" x2="25" y2="45" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round"></line>
+    <line x1="5" y1="25" x2="10" y2="25" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round"></line>
+    <line x1="40" y1="25" x2="45" y2="25" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round"></line>
+    <line x1="25" y1="25" x2="25" y2="15" stroke="#0a0a0f" stroke-width="2.25" stroke-linecap="round"></line>
+    <line x1="25" y1="25" x2="34" y2="25" stroke="#0a0a0f" stroke-width="2.25" stroke-linecap="round"></line>
+    <circle cx="25" cy="25" r="1.9" fill="#0a0a0f"></circle>
+  </g>
+  <text x="56" y="38" font-family="Inter, -apple-system, sans-serif" font-size="40" letter-spacing="-0.02em" fill="#0a0a0f"><tspan font-weight="400">Trading</tspan><tspan font-weight="700">Clocks</tspan></text>
+</svg>

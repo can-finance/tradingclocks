@@ -22,9 +22,10 @@ export function getDateFromIsoInTz(isoStr: string, timezone: string): Date {
     // Treat isoStr as UTC first to get a reference point
     const utcAssume = new Date(isoStr + 'Z');
 
-    // Format this UTC time as if it were in the target timezone
+    // Format with full date so day-boundary crossings (e.g. UTC+12/+13) are handled correctly
     const fmt = new Intl.DateTimeFormat('en-US', {
         timeZone: timezone,
+        year: 'numeric', month: '2-digit', day: '2-digit',
         hour: '2-digit', minute: '2-digit',
         hour12: false
     });
@@ -32,19 +33,18 @@ export function getDateFromIsoInTz(isoStr: string, timezone: string): Date {
     const parts = fmt.formatToParts(utcAssume);
     const getPart = (type: string) => parseInt(parts.find(p => p.type === type)?.value || '0');
 
-    // Calculate offset: what time does the target TZ show vs UTC?
-    const targetH = utcAssume.getUTCHours();
-    const targetM = utcAssume.getUTCMinutes();
-    const actualH = getPart('hour');
-    const actualM = getPart('minute');
+    const tzYear = getPart('year');
+    const tzMonth = getPart('month') - 1; // 0-indexed
+    const tzDay = getPart('day');
+    const tzHour = getPart('hour') % 24; // guard against Intl returning '24' at midnight
+    const tzMinute = getPart('minute');
 
-    // Offset in minutes (positive = ahead of UTC)
-    let diffMins = (actualH * 60 + actualM) - (targetH * 60 + targetM);
-    if (diffMins > 720) diffMins -= 1440;
-    if (diffMins < -720) diffMins += 1440;
+    // Build UTC ms for what the timezone shows (treating it as if it were UTC)
+    const tzAsIfUtcMs = Date.UTC(tzYear, tzMonth, tzDay, tzHour, tzMinute);
 
-    // Adjust to get the correct UTC time for the given local time
-    return new Date(utcAssume.getTime() - diffMins * 60000);
+    // Offset = TZ_local_as_UTC − real_UTC; subtract it to get the correct UTC instant
+    const offsetMs = tzAsIfUtcMs - utcAssume.getTime();
+    return new Date(utcAssume.getTime() - offsetMs);
 }
 
 /**
