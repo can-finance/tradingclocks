@@ -46,21 +46,20 @@
     rel="stylesheet">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕐</text></svg>" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head>
 
 <body>
   <div id="time-travel-indicator" class="time-travel-indicator">
-    <span>⚠️ Time Travel Active</span>
+    <img src="/icons/warning.svg" class="site-icon" alt=""><span>Time Travel Active</span>
   </div>
   <div id="app">
     <!-- Sidebar -->
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">◀</button>
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar"><img src="/icons/chevron-left.svg" class="site-icon" alt=""></button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"><img src="/icons/moon.svg" class="site-icon" alt=""></button>
       </div>
       <div class="sidebar-content" id="market-selector">
         <!-- Populated by JavaScript -->
@@ -73,10 +72,10 @@
       <!-- Mobile Navigation (Visible only on mobile) -->
       <nav class="sidebar-nav">
         <div class="sidebar-nav-header">Menu</div>
-        <a href="schedule.html" class="sidebar-nav-link">🕒 Market Hours</a>
-        <a href="dst.html" class="sidebar-nav-link">📅 DST Schedules</a>
-        <a href="holidays-summary.html" class="sidebar-nav-link">🎉 Holidays</a>
-        <a href="editor.html" class="sidebar-nav-link">⚙️ Override Hours</a>
+        <a href="schedule.html" class="sidebar-nav-link"><img src="/icons/hours.svg" class="site-icon" alt=""> Market Hours</a>
+        <a href="dst.html" class="sidebar-nav-link"><img src="/icons/dst.svg" class="site-icon" alt=""> DST Schedules</a>
+        <a href="holidays-summary.html" class="sidebar-nav-link"><img src="/icons/holidays.svg" class="site-icon" alt=""> Holidays</a>
+        <a href="editor.html" class="sidebar-nav-link"><img src="/icons/override.svg" class="site-icon" alt=""> Override Hours</a>
       </nav>
     </aside>
 
@@ -87,12 +86,15 @@
     <main class="main-content">
       <header class="header">
         <div class="header-title">
-          <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
-          <h1>🕐 Trading Clocks</h1>
-          <a href="schedule.html" class="header-editor-link">🕒 Market Hours</a>
-          <a href="dst.html" class="header-editor-link">📅 DST</a>
-          <a href="holidays-summary.html" class="header-editor-link">🎉 Holidays</a>
-          <a href="editor.html" class="header-editor-link">⚙️ Override Market Hours</a>
+          <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu"><img src="/icons/menu.svg" class="site-icon" alt=""></button>
+          <h1>
+            <img src="/logo-wordmark.svg" class="site-logo site-logo-light" alt="Trading Clocks">
+            <img src="/logo-wordmark-dark.svg" class="site-logo site-logo-dark" alt="">
+          </h1>
+          <a href="schedule.html" class="header-editor-link"><img src="/icons/hours.svg" class="site-icon" alt=""> Market Hours</a>
+          <a href="dst.html" class="header-editor-link"><img src="/icons/dst.svg" class="site-icon" alt=""> DST Schedule</a>
+          <a href="holidays-summary.html" class="header-editor-link"><img src="/icons/holidays.svg" class="site-icon" alt=""> Holidays</a>
+          <a href="editor.html" class="header-editor-link"><img src="/icons/override.svg" class="site-icon" alt=""> Override Market Hours</a>
         </div>
         <div class="header-time">
           <div class="local-time">

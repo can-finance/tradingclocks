@@ -10,6 +10,7 @@
   --bg-secondary: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.8);
   --bg-glass-hover: rgba(255, 255, 255, 0.95);
+  --bg-tertiary: rgba(0, 0, 0, 0.04);
 
   --text-primary: #1e293b;
   --text-secondary: #475569;
@@ -27,6 +28,7 @@
   --status-opening-soon-glow: rgba(37, 99, 235, 0.2);
   --status-closing-soon: #d97706;
   --status-closing-soon-glow: rgba(217, 119, 6, 0.2);
+  --status-lunch: #fbbf24;
 
   --border-subtle: #e2e8f0;
   --border-glass: #cbd5e1;
@@ -71,10 +73,11 @@
   --bg-secondary: #12121a;
   --bg-glass: rgba(255, 255, 255, 0.03);
   --bg-glass-hover: rgba(255, 255, 255, 0.06);
+  --bg-tertiary: rgba(255, 255, 255, 0.06);
 
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.4);
+  --text-primary: #d4d7dd;
+  --text-secondary: rgba(212, 215, 221, 0.72);
+  --text-muted: rgba(212, 215, 221, 0.48);
 
   --status-open: #22c55e;
   --status-open-glow: rgba(34, 197, 94, 0.4);
@@ -84,6 +87,7 @@
   --status-opening-soon-glow: rgba(59, 130, 246, 0.4);
   --status-closing-soon: #f59e0b;
   --status-closing-soon-glow: rgba(245, 158, 11, 0.4);
+  --status-lunch: #fbbf24;
 
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-glass: rgba(255, 255, 255, 0.1);
@@ -160,6 +164,76 @@ h2 {
 
 h3 {
   font-size: 1rem;
+}
+
+/* -------- Site Icons -------- */
+.site-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.site-icon-h1 {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+h1:has(.site-icon-h1) {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dark-mode .site-icon {
+  filter: brightness(0) invert(1);
+}
+
+.site-logo {
+  height: 42px;
+  width: auto;
+}
+
+.site-logo-light { display: block; }
+.site-logo-dark  { display: none; }
+.dark-mode .site-logo-light { display: none; }
+.dark-mode .site-logo-dark  { display: block; }
+
+/* -------- Type Utilities -------- */
+.t-gradient-title {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.t-mono    { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.t-count   { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; letter-spacing: 0.02em; }
+.t-code    { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); background: var(--bg-glass); padding: 2px 5px; border-radius: 3px; }
+
+.t-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.t-label-strong {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.t-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* -------- Layout -------- */
@@ -411,20 +485,23 @@ h3 {
 
 .btn-quick {
   flex: 1;
-  padding: var(--spacing-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .btn-quick:hover {
-  background: var(--bg-glass-hover);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
+  border-color: var(--text-muted);
 }
 
 /* -------- Main Content -------- */
@@ -469,53 +546,53 @@ h3 {
 }
 
 .header-title h1 {
-  background: var(--accent-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  display: flex;
+  align-items: center;
+  line-height: 1;
 }
+
 
 .header-editor-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: 0.85rem;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .header-editor-link:hover {
   color: var(--text-primary);
-  background: var(--bg-glass-hover);
-  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  border-color: var(--text-muted);
 }
 
 /* Back Link */
 .header-back-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: 0.85rem;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .header-back-link:hover {
   color: var(--text-primary);
-  background: var(--bg-glass-hover);
-  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  border-color: var(--text-muted);
 }
 
 .header-time {
@@ -670,7 +747,7 @@ h3 {
 }
 
 .clock-card.is-on-lunch::before {
-  background: #fbbf24;
+  background: var(--status-lunch);
   opacity: 0.8;
 }
 
@@ -834,11 +911,11 @@ h3 {
 }
 
 .is-on-lunch .status-text {
-  color: #fbbf24;
+  color: var(--status-lunch);
 }
 
 .is-on-lunch .countdown-value {
-  color: #fbbf24;
+  color: var(--status-lunch);
 }
 
 /* Progress Bar */
@@ -902,7 +979,7 @@ h3 {
 }
 
 .is-on-lunch .progress-bar-fill {
-  background: #fbbf24;
+  background: var(--status-lunch);
 }
 
 .is-closed .progress-bar-fill {
@@ -915,36 +992,44 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  gap: 6px;
+  padding: 0.55rem 1.1rem;
   font-size: 0.85rem;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  border: 1px solid var(--border-glass);
+  font-family: var(--font-family);
+  border: 1px solid transparent;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
 }
 
 .btn-primary {
-  background: var(--accent-gradient);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-  transform: translateY(-1px);
+  background: var(--text-secondary);
+  border-color: var(--text-secondary);
 }
 
 .btn-secondary {
-  background: var(--bg-glass);
-  color: var(--text-secondary);
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-glass-hover);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
-  border-color: var(--accent-primary);
+  border-color: var(--text-muted);
 }
 
 /* -------- Toast Notifications -------- */
@@ -1088,15 +1173,15 @@ h3 {
 
 .dst-table th:nth-child(4),
 .dst-table td:nth-child(4) {
-  width: 20%;
-  min-width: 135px;
-  text-align: center;
+  width: 10%;
+  min-width: 80px;
 }
 
 .dst-table th:nth-child(5),
 .dst-table td:nth-child(5) {
-  width: 12%;
-  min-width: 75px;
+  width: 22%;
+  min-width: 200px;
+  text-align: center;
 }
 
 /* Lunch Break Cell Styling */
@@ -1115,6 +1200,7 @@ h3 {
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 /* Holidays Table Column Widths */
@@ -1191,9 +1277,10 @@ h3 {
   right: var(--spacing-md);
   font-size: 0.6rem;
   padding: 2px 6px;
-  background: var(--accent-gradient);
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border-radius: 4px;
-  font-weight: 500;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1226,7 +1313,7 @@ h3 {
   text-align: left;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.75rem;
@@ -1278,9 +1365,9 @@ h3 {
 }
 
 .badge-active {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--accent-primary);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
 }
 
 .schedule-intro {

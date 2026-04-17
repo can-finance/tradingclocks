@@ -76,7 +76,9 @@ function toggleTheme(): void {
 
 function updateThemeIcon(isDark: boolean): void {
   if (elements?.themeToggle) {
-    elements.themeToggle.textContent = isDark ? '☀️' : '🌙';
+    elements.themeToggle.innerHTML = isDark
+      ? '<img src="/icons/sun.svg" class="site-icon" alt="Light mode">'
+      : '<img src="/icons/moon.svg" class="site-icon" alt="Dark mode">';
   }
 }
 

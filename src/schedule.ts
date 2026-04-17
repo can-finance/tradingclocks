@@ -51,8 +51,8 @@ function renderScheduleTable(markets: Market[]): void {
                     <th>Country</th>
                     <th>Opens <span class="sub-header">(Local Time)</span></th>
                     <th>Closes <span class="sub-header">(Local Time)</span></th>
-                    <th>Lunch Break</th>
                     <th>Duration</th>
+                    <th>Lunch Break</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,14 +101,14 @@ function renderScheduleTable(markets: Market[]): void {
 
             html += `
                 <tr>
-                    <td class="dst-country-cell">
+                    <td><div class="dst-country-cell">
                         <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
                         <span>${market.country}</span>
-                    </td>
+                    </div></td>
                     <td class="time-cell">${openFmt.time} <span class="tz-abbrev">${openFmt.tzAbbrev}</span></td>
                     <td class="time-cell">${closeFmt.time} <span class="tz-abbrev">${closeFmt.tzAbbrev}</span></td>
-                    <td class="lunch-cell">${lunchHtml}</td>
                     <td class="duration-cell">${hours}h ${mins > 0 ? mins + 'm' : ''}</td>
+                    <td class="lunch-cell">${lunchHtml}</td>
                 </tr>
             `;
         });
