@@ -1374,5 +1374,176 @@
                 "status": "closed"
             }
         ]
+    },
+    "2027": {
+        "nyse": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "nasdaq": "nyse",
+        "tsx": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "lse": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "euronext-paris": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "xetra": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "six": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "euronext-amsterdam": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "euronext-brussels": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "bme": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "borsa-italiana": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "wiener-borse": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "gpw": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "nasdaq-nordic-stockholm": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "nasdaq-nordic-copenhagen": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "nasdaq-nordic-helsinki": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "oslo-bors": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "euronext-dublin": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "twse": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "krx": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "tse": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "hkex": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "sgx": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "asx": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ],
+        "nzx": [
+            {
+                "date": "2027-01-01",
+                "name": "New Year's Day",
+                "status": "closed"
+            }
+        ]
     }
 }
