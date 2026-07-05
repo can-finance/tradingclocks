@@ -37,7 +37,9 @@ jobs:
           node-version: 20
           cache: 'npm'
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Test
+        run: npm test
       - name: Build
         run: npm run build
       - name: Setup Pages

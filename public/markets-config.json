@@ -34,6 +34,7 @@
             "code": "NYSE",
             "country": "United States",
             "countryCode": "US",
+            "flag": "🇺🇸",
             "timezone": "America/New_York",
             "openTime": "09:30",
             "closeTime": "16:00",

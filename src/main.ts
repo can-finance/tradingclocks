@@ -21,6 +21,8 @@ import {
   saveSelectedMarkets,
   getTimeOverrides
 } from './storage';
+import { STORAGE_KEYS, TIMING, REGIONS, getFlagUrl, type Region } from './constants';
+import { escapeHtml } from './htmlUtils';
 import type { TimeOverrides } from './types';
 
 // ============ State ============
@@ -70,7 +72,7 @@ let elements: Elements;
 // ============ Theme ============
 function toggleTheme(): void {
   const isDark = document.documentElement.classList.toggle('dark-mode');
-  localStorage.setItem('trading-clocks-theme', isDark ? 'dark' : 'light');
+  localStorage.setItem(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
   updateThemeIcon(isDark);
 }
 
@@ -84,7 +86,7 @@ function updateThemeIcon(isDark: boolean): void {
 
 // ============ Sidebar ============
 function initSidebar(): void {
-  const savedState = localStorage.getItem('trading-clocks-sidebar');
+  const savedState = localStorage.getItem(STORAGE_KEYS.SIDEBAR);
   const isCollapsed = savedState === 'collapsed';
   if (isCollapsed) {
     document.getElementById('sidebar')?.classList.add('is-collapsed');
@@ -94,7 +96,7 @@ function initSidebar(): void {
 function toggleSidebar(): void {
   const sidebar = elements.sidebar;
   const isCollapsed = sidebar.classList.toggle('is-collapsed');
-  localStorage.setItem('trading-clocks-sidebar', isCollapsed ? 'collapsed' : 'expanded');
+  localStorage.setItem(STORAGE_KEYS.SIDEBAR, isCollapsed ? 'collapsed' : 'expanded');
 }
 
 // ============ Initialization ============
@@ -105,9 +107,8 @@ async function init(): Promise<void> {
   // Update theme icon after elements are loaded
   updateThemeIcon(document.documentElement.classList.contains('dark-mode'));
 
-  // Load markets from config file
-  await loadMarketsConfig();
-  await loadHolidaysConfig(); // Added this line
+  // Load markets and holidays from config files
+  await Promise.all([loadMarketsConfig(), loadHolidaysConfig()]);
 
   // Load persisted state
   selectedMarketIds = getSelectedMarkets(DEFAULT_MARKETS);
@@ -125,17 +126,16 @@ async function init(): Promise<void> {
   setInterval(() => {
     renderClocks();
     updateLocalTime();
-  }, 1000);
+  }, TIMING.UPDATE_INTERVAL);
 }
 
 // ============ Rendering ============
 function renderMarketSelector(): void {
   const grouped = getMarketsByRegion();
-  const regionOrder: Array<'Americas' | 'Europe' | 'Asia-Pacific'> = ['Asia-Pacific', 'Europe', 'Americas'];
 
   let html = '';
 
-  for (const region of regionOrder) {
+  for (const region of REGIONS) {
     const regionMarkets = grouped[region] || [];
     if (regionMarkets.length === 0) continue;
 
@@ -160,17 +160,16 @@ function renderMarketSelector(): void {
 
     for (const market of regionMarkets) {
       const isChecked = selectedMarketIds.includes(market.id);
-      const countryCode = market.countryCode.toLowerCase();
       html += `
         <label class="market-item">
-          <input type="checkbox" 
+          <input type="checkbox"
                  class="custom-checkbox market-checkbox"
-                 data-market-id="${market.id}"
+                 data-market-id="${escapeHtml(market.id)}"
                  data-region="${region}"
                  ${isChecked ? 'checked' : ''} />
-          <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
-          <span class="market-item-name">${market.country}</span>
-          <span class="market-item-code">${market.code}</span>
+          <img class="market-item-flag" src="${getFlagUrl(market.countryCode)}" alt="${escapeHtml(market.country)}" />
+          <span class="market-item-name">${escapeHtml(market.country)}</span>
+          <span class="market-item-code">${escapeHtml(market.code)}</span>
         </label>
       `;
     }
@@ -212,12 +211,13 @@ function renderProgressBar(
     return '';
   }
 
-  // If market is closed, show filled bar (100%)
-  // This represents the last completed trading session
+  // If market is closed, show an empty bar before today's open and a filled
+  // bar (100%) after close, representing the last completed trading session
   if (!status.isOpen && !status.isOnLunch) {
+    const fillPercent = now < openDate ? 0 : 100;
     return `<div class="progress-bar-container">
       <div class="progress-bar-track">
-        <div class="progress-bar-fill" style="width: 100%;"></div>
+        <div class="progress-bar-fill" style="width: ${fillPercent}%;"></div>
       </div>
     </div>`;
   }
@@ -331,17 +331,17 @@ function renderClocks(): void {
       statusText = 'Lunch Break';
     } else if (status.isOpen) {
       // Check if closing soon (within 30 minutes)
-      if (status.timeUntil < 30 * 60 * 1000 && status.nextEvent === 'closes') {
+      if (status.timeUntil < TIMING.CLOSING_SOON_THRESHOLD && status.nextEvent === 'closes') {
         statusClass = 'is-closing-soon';
         statusText = 'Closing Soon';
-      } else if (status.nextEvent === 'lunch-starts' && status.timeUntil < 30 * 60 * 1000) {
+      } else if (status.nextEvent === 'lunch-starts' && status.timeUntil < TIMING.CLOSING_SOON_THRESHOLD) {
         statusClass = 'is-open';
         statusText = 'Lunch Soon';
       } else {
         statusClass = 'is-open';
         statusText = 'Open';
       }
-    } else if (!status.isWeekend && status.timeUntil < 30 * 60 * 1000) {
+    } else if (!status.isWeekend && status.timeUntil < TIMING.OPENING_SOON_THRESHOLD) {
       statusClass = 'is-opening-soon';
       statusText = 'Opening Soon';
     }
@@ -366,34 +366,34 @@ function renderClocks(): void {
     else if (status.nextEvent === 'lunch-starts') countdownLabel = 'Lunch in';
     else if (status.nextEvent === 'reopens') countdownLabel = 'Reopens in';
 
-    const countryCode = market.countryCode.toLowerCase();
-
     // Calculate progress bar
     const progressBarHtml = renderProgressBar(market, status, openDate, closeDate);
 
+    const holidayName = status.holidayName ? escapeHtml(status.holidayName) : undefined;
+
     html += `
-      <div class="clock-card ${statusClass}" data-market-id="${market.id}">
+      <div class="clock-card ${statusClass}" data-market-id="${escapeHtml(market.id)}">
         ${hasOverride ? '<div class="override-badge">Custom</div>' : ''}
         <div class="clock-header">
           <div class="clock-identity">
             <div class="clock-info">
-              <h3>${market.name}</h3>
+              <h3>${escapeHtml(market.name)}</h3>
               <div class="clock-meta">
-                <img class="clock-flag" src="https://flagcdn.com/w80/${countryCode}.png" alt="${market.country}" />
-                <div class="clock-code">${market.code}</div>
+                <img class="clock-flag" src="${getFlagUrl(market.countryCode, 80)}" alt="${escapeHtml(market.country)}" />
+                <div class="clock-code">${escapeHtml(market.code)}</div>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="clock-status-row">
           <div class="clock-status">
             <div class="status-indicator"></div>
             <div class="status-text">
               ${status.isTodayHoliday
-        ? `Holiday: ${status.holidayName}`
-        : status.holidayName
-          ? `${statusText} · Next: ${status.holidayName}`
+        ? `Holiday: ${holidayName}`
+        : holidayName
+          ? `${statusText} · Next: ${holidayName}`
           : statusText
       }
             </div>
@@ -543,7 +543,7 @@ function handleMarketToggle(e: Event): void {
 
 function handleRegionToggle(e: Event): void {
   const target = e.target as HTMLInputElement;
-  const region = target.dataset.region as 'Americas' | 'Europe' | 'Asia-Pacific';
+  const region = target.dataset.region as Region;
   if (!region) return;
 
   const grouped = getMarketsByRegion();

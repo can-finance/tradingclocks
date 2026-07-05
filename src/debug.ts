@@ -201,6 +201,16 @@ export class DebugUI {
 
         // Global Keyboard Shortcut: Shift + D (Control + D might conflict)
         document.addEventListener('keydown', (e) => {
+            // Ignore while typing in a form field
+            const target = e.target as HTMLElement | null;
+            if (target && (
+                target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.tagName === 'SELECT' ||
+                target.isContentEditable
+            )) {
+                return;
+            }
             if (e.shiftKey && e.key === 'D') {
                 this.toggle();
             }

@@ -18,4 +18,9 @@ export const TIMING = {
     CLOSING_SOON_THRESHOLD: 30 * 60 * 1000  // 30 minutes
 } as const;
 
-export const FLAG_CDN_URL = 'https://flagcdn.com/w40';
+/**
+ * Flag image URL from flagcdn.com (size = image width in px)
+ */
+export function getFlagUrl(countryCode: string, size: 40 | 80 = 40): string {
+    return `https://flagcdn.com/w${size}/${countryCode.toLowerCase()}.png`;
+}

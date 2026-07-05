@@ -3,11 +3,7 @@
  */
 
 import type { TimeOverride, TimeOverrides } from './types';
-
-const STORAGE_KEYS = {
-    SELECTED_MARKETS: 'tradingClocks_selectedMarkets',
-    TIME_OVERRIDES: 'tradingClocks_timeOverrides'
-} as const;
+import { STORAGE_KEYS } from './constants';
 
 /**
  * Get selected market IDs from storage
@@ -16,7 +12,11 @@ export function getSelectedMarkets(defaultMarkets: string[]): string[] {
     try {
         const stored = localStorage.getItem(STORAGE_KEYS.SELECTED_MARKETS);
         if (stored) {
-            return JSON.parse(stored) as string[];
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+                return parsed.filter((id): id is string => typeof id === 'string');
+            }
+            console.warn('Ignoring malformed selected markets in storage:', parsed);
         }
     } catch (e) {
         console.warn('Error reading selected markets from storage:', e);
@@ -42,7 +42,11 @@ export function getTimeOverrides(): TimeOverrides {
     try {
         const stored = localStorage.getItem(STORAGE_KEYS.TIME_OVERRIDES);
         if (stored) {
-            return JSON.parse(stored) as TimeOverrides;
+            const parsed = JSON.parse(stored);
+            if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                return parsed as TimeOverrides;
+            }
+            console.warn('Ignoring malformed time overrides in storage:', parsed);
         }
     } catch (e) {
         console.warn('Error reading time overrides from storage:', e);
@@ -72,4 +76,15 @@ export function saveTimeOverride(marketId: string, override: TimeOverride | null
  */
 export function clearTimeOverride(marketId: string): void {
     saveTimeOverride(marketId, null);
+}
+
+/**
+ * Clear all saved time overrides
+ */
+export function clearAllTimeOverrides(): void {
+    try {
+        localStorage.removeItem(STORAGE_KEYS.TIME_OVERRIDES);
+    } catch (e) {
+        console.warn('Error clearing time overrides from storage:', e);
+    }
 }

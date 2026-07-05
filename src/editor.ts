@@ -4,12 +4,14 @@
  */
 
 import type { Market, TimeOverride, TimeOverrides } from './types';
-import { getTimeOverrides, saveTimeOverride, clearTimeOverride } from './storage';
+import { getTimeOverrides, saveTimeOverride, clearTimeOverride, clearAllTimeOverrides } from './storage';
+import { getGMTOffset } from './timezone';
+import { getFlagUrl } from './constants';
+import { escapeHtml } from './htmlUtils';
 
 // State
 let markets: Market[] = [];
 let originalMarkets: Map<string, Market> = new Map();
-let pendingChanges: Map<string, TimeOverride> = new Map();
 
 /**
  * Initialize the editor
@@ -40,34 +42,6 @@ async function loadMarkets(): Promise<void> {
         console.error('Error loading markets:', error);
         showToast('Failed to load markets', false);
     }
-}
-
-/**
- * Get GMT offset for a timezone in hours
- */
-function getGMTOffset(timezone: string): number {
-    try {
-        const now = new Date();
-        const formatter = new Intl.DateTimeFormat('en-US', {
-            timeZone: timezone,
-            timeZoneName: 'shortOffset'
-        });
-        const parts = formatter.formatToParts(now);
-        const tzPart = parts.find(p => p.type === 'timeZoneName');
-        if (tzPart) {
-            // Parse "GMT+9" or "GMT-5" format
-            const match = tzPart.value.match(/GMT([+-]?)(\d+)?(?::(\d+))?/);
-            if (match) {
-                const sign = match[1] === '-' ? -1 : 1;
-                const hours = parseInt(match[2] || '0', 10);
-                const minutes = parseInt(match[3] || '0', 10);
-                return sign * (hours + minutes / 60);
-            }
-        }
-    } catch (e) {
-        console.warn(`Error getting offset for ${timezone}:`, e);
-    }
-    return 0;
 }
 
 /**
@@ -136,44 +110,46 @@ function renderMarketRow(market: Market, overrides: TimeOverrides): string {
     const hasOverride = override && (override.openTime || override.closeTime);
     const gmtOffset = formatGMTOffset(getGMTOffset(market.timezone));
 
+    const marketId = escapeHtml(market.id);
+
     return `
-        <tr data-market-id="${market.id}">
+        <tr data-market-id="${marketId}">
             <td class="gmt-cell">${gmtOffset}</td>
             <td>
                 <div class="dst-country-cell">
-                    <img class="market-item-flag" src="https://flagcdn.com/w40/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
-                    <span>${market.country}</span>
+                    <img class="market-item-flag" src="${getFlagUrl(market.countryCode)}" alt="${escapeHtml(market.country)}" />
+                    <span>${escapeHtml(market.country)}</span>
                 </div>
             </td>
             <td>
-                <span class="exchange-name">${market.name}</span>
-                <span class="exchange-code">${market.code}</span>
+                <span class="exchange-name">${escapeHtml(market.name)}</span>
+                <span class="exchange-code">${escapeHtml(market.code)}</span>
             </td>
             <td>
-                <input 
-                    type="time" 
-                    class="time-input ${hasOverride ? 'modified' : ''}" 
-                    data-market-id="${market.id}"
+                <input
+                    type="time"
+                    class="time-input ${hasOverride ? 'modified' : ''}"
+                    data-market-id="${marketId}"
                     data-field="open"
-                    data-original="${market.openTime}"
-                    value="${openTime}"
+                    data-original="${escapeHtml(market.openTime)}"
+                    value="${escapeHtml(openTime)}"
                 />
             </td>
             <td>
-                <input 
-                    type="time" 
-                    class="time-input ${hasOverride ? 'modified' : ''}" 
-                    data-market-id="${market.id}"
+                <input
+                    type="time"
+                    class="time-input ${hasOverride ? 'modified' : ''}"
+                    data-market-id="${marketId}"
                     data-field="close"
-                    data-original="${market.closeTime}"
-                    value="${closeTime}"
+                    data-original="${escapeHtml(market.closeTime)}"
+                    value="${escapeHtml(closeTime)}"
                 />
             </td>
-            <td class="timezone-cell">${market.timezone}</td>
+            <td class="timezone-cell">${escapeHtml(market.timezone)}</td>
             <td class="actions-cell">
-                <button 
-                    class="btn-reset-row" 
-                    data-market-id="${market.id}"
+                <button
+                    class="btn-reset-row"
+                    data-market-id="${marketId}"
                     ${!hasOverride ? 'disabled' : ''}
                 >
                     Reset
@@ -216,24 +192,6 @@ function setupEventListeners(): void {
  * Handle time input change
  */
 function handleTimeChange(input: HTMLInputElement): void {
-    const marketId = input.dataset.marketId;
-    const field = input.dataset.field as 'open' | 'close';
-    const original = input.dataset.original;
-    const value = input.value;
-
-    if (!marketId || !field) return;
-
-    // Track pending change
-    let pending = pendingChanges.get(marketId) || { openTime: null, closeTime: null };
-
-    if (field === 'open') {
-        pending.openTime = value !== original ? value : null;
-    } else {
-        pending.closeTime = value !== original ? value : null;
-    }
-
-    pendingChanges.set(marketId, pending);
-
     // Update visual state
     const row = input.closest('tr');
     if (row) {
@@ -260,7 +218,6 @@ function resetMarket(marketId: string): void {
 
     // Clear from storage
     clearTimeOverride(marketId);
-    pendingChanges.delete(marketId);
 
     // Update inputs
     const row = document.querySelector(`tr[data-market-id="${marketId}"]`);
@@ -289,7 +246,9 @@ function resetMarket(marketId: string): void {
  */
 function saveAllChanges(): void {
     const rows = document.querySelectorAll('tr[data-market-id]');
+    const savedOverrides = getTimeOverrides();
     let changeCount = 0;
+    let clearedCount = 0;
 
     rows.forEach(row => {
         const marketId = (row as HTMLElement).dataset.marketId;
@@ -313,11 +272,18 @@ function saveAllChanges(): void {
             };
             saveTimeOverride(marketId, override);
             changeCount++;
+        } else if (savedOverrides[marketId]) {
+            // Inputs match the defaults again — remove the stale saved override
+            // so the dashboard stops applying old custom times
+            clearTimeOverride(marketId);
+            clearedCount++;
         }
     });
 
-    pendingChanges.clear();
-    showToast(`Saved ${changeCount} market${changeCount !== 1 ? 's' : ''}`, true);
+    const parts: string[] = [];
+    if (changeCount > 0) parts.push(`Saved ${changeCount} market${changeCount !== 1 ? 's' : ''}`);
+    if (clearedCount > 0) parts.push(`cleared ${clearedCount} override${clearedCount !== 1 ? 's' : ''}`);
+    showToast(parts.length > 0 ? parts.join(', ') : 'No changes to save', true);
 }
 
 /**
@@ -329,8 +295,7 @@ function resetAllChanges(): void {
     }
 
     // Clear all overrides from storage
-    localStorage.removeItem('tradingClocks_timeOverrides');
-    pendingChanges.clear();
+    clearAllTimeOverrides();
 
     // Re-render table
     renderTable();

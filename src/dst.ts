@@ -1,10 +1,11 @@
 
 import './style.css';
-import { loadMarketsConfig } from './markets';
+import { loadMarketsConfig, getUniqueMarketsPerCountry } from './markets';
 import type { Market } from './types';
 import { getGMTOffset } from './timezone';
 import { formatDstDate } from './dateUtils';
-import { REGIONS } from './constants';
+import { REGIONS, getFlagUrl } from './constants';
+import { escapeHtml } from './htmlUtils';
 
 // ============ Render Logic ============
 function renderDSTTable(markets: Market[]): void {
@@ -12,14 +13,7 @@ function renderDSTTable(markets: Market[]): void {
     if (!container) return;
 
     // Group by unique country to avoid duplicates (e.g. NYSE/NASDAQ/Chicago all US)
-    const uniqueCountries = new Map<string, Market>();
-    markets.forEach(m => {
-        if (!uniqueCountries.has(m.country)) {
-            uniqueCountries.set(m.country, m);
-        }
-    });
-
-    const countries = Array.from(uniqueCountries.values());
+    const countries = getUniqueMarketsPerCountry(markets);
 
     // Group by region
     const regions = REGIONS;
@@ -34,7 +28,6 @@ function renderDSTTable(markets: Market[]): void {
                 return offsetB - offsetA;
             });
 
-        if (regionCountries.length === 0) return;
         if (regionCountries.length === 0) return;
 
         html += `<h2 class="dst-region-title">${region}</h2>`;
@@ -53,22 +46,15 @@ function renderDSTTable(markets: Market[]): void {
         `;
 
         regionCountries.forEach(market => {
-            const countryCode = market.countryCode.toLowerCase();
-
             // Determine crude status
-            let status = 'Standard Time';
-            if (market.dstStart && market.dstEnd) {
-                status = 'Observes DST';
-            } else {
-                status = 'No DST';
-            }
+            const status = market.dstStart && market.dstEnd ? 'Observes DST' : 'No DST';
 
             html += `
                 <tr>
                     <td>
                         <div class="dst-country-cell">
-                            <img class="market-item-flag" src="https://flagcdn.com/w40/${countryCode}.png" alt="${market.country}" />
-                            <span>${market.country}</span>
+                            <img class="market-item-flag" src="${getFlagUrl(market.countryCode)}" alt="${escapeHtml(market.country)}" />
+                            <span>${escapeHtml(market.country)}</span>
                         </div>
                     </td>
                     <td>${market.dstEnd ? formatDstDate(market.dstEnd) : '-'}</td>

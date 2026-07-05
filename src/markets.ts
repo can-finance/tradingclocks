@@ -3,7 +3,7 @@
  * Loads market data from editable JSON config file
  */
 
-import type { Market, MarketsByRegion, Country } from './types';
+import type { Market, MarketsByRegion } from './types';
 import { getGMTOffset } from './timezone';
 
 // Default markets (used as fallback if config fails to load)
@@ -62,31 +62,6 @@ export function getMarketsByRegion(): MarketsByRegion {
         grouped[market.region].push(market);
     }
     return grouped;
-}
-
-/**
- * Get unique countries from markets
- */
-export function getUniqueCountries(): Country[] {
-    const countries = new Map<string, Country>();
-    for (const market of markets) {
-        if (!countries.has(market.countryCode)) {
-            countries.set(market.countryCode, {
-                code: market.countryCode,
-                name: market.country,
-
-                region: market.region
-            });
-        }
-    }
-    return Array.from(countries.values());
-}
-
-/**
- * Get market by ID
- */
-export function getMarketById(id: string): Market | undefined {
-    return markets.find(m => m.id === id);
 }
 
 /**

@@ -4,7 +4,8 @@
 
 import type { Market, MarketStatus, FormattedTime, TimeOverride } from './types';
 import { timeService } from './timeService';
-import { getMarketHolidays } from './holidays';
+import { getMarketHolidays, type Holiday } from './holidays';
+import { getDateFromIsoInTz, addDaysToDateStr, getDayOfWeekOfDateStr } from './dateUtils';
 
 /**
  * Parse a time string (HH:MM) and create a Date for today in the given timezone.
@@ -13,66 +14,15 @@ import { getMarketHolidays } from './holidays';
 export function parseTimeInTimezone(timeStr: string, timezone: string): Date {
     const now = timeService.getNow();
 
-    // Get today's date components in the target timezone
-    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    // Today's date in the target timezone (en-CA formats as YYYY-MM-DD)
+    const dateStr = new Intl.DateTimeFormat('en-CA', {
         timeZone: timezone,
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
-    });
-    const parts = dateFormatter.formatToParts(now);
-    const year = parts.find(p => p.type === 'year')?.value;
-    const month = parts.find(p => p.type === 'month')?.value;
-    const day = parts.find(p => p.type === 'day')?.value;
+    }).format(now);
 
-    // Parse the time string
-    const [hours, minutes] = timeStr.split(':').map(Number);
-
-    // Create an ISO string that we'll interpret in the target timezone
-    // We need to find the UTC time that corresponds to this local time in the timezone
-
-    // First, create a date in UTC with these components
-    const targetLocalISO = `${year}-${month}-${day}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
-
-    // Now we need to find what UTC time equals this local time in the target timezone
-    // We do this by creating a date and adjusting for the timezone offset
-
-    // Get the offset of the target timezone at this approximate time
-    const tempDate = new Date(targetLocalISO + 'Z'); // Interpret as UTC first
-
-    // Format this UTC time as if it were in the target timezone to find the offset
-    const targetFormatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: timezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    });
-
-    // Parse what date/time it would be in the target timezone when it's tempDate in UTC
-    const tzParts = targetFormatter.formatToParts(tempDate);
-    const tzYear = parseInt(tzParts.find(p => p.type === 'year')?.value || '0');
-    const tzMonth = parseInt(tzParts.find(p => p.type === 'month')?.value || '0');
-    const tzDay = parseInt(tzParts.find(p => p.type === 'day')?.value || '0');
-    const tzHour = parseInt(tzParts.find(p => p.type === 'hour')?.value || '0');
-    const tzMinute = parseInt(tzParts.find(p => p.type === 'minute')?.value || '0');
-
-    // Calculate offset using both date and time components to avoid day-boundary ambiguity
-    // (e.g., GMT+12 vs GMT-12 are indistinguishable from hour/minute difference alone)
-    const utcMs = Date.UTC(tempDate.getUTCFullYear(), tempDate.getUTCMonth(), tempDate.getUTCDate(), tempDate.getUTCHours(), tempDate.getUTCMinutes());
-    const tzMs = Date.UTC(tzYear, tzMonth - 1, tzDay, tzHour, tzMinute);
-    const offsetMinutes = (tzMs - utcMs) / (60 * 1000);
-
-    // Now create the correct UTC time
-    // We want: targetLocalTime = UTC + offset
-    // So: UTC = targetLocalTime - offset
-    const targetMs = new Date(targetLocalISO + 'Z').getTime();
-    const correctUTC = targetMs - (offsetMinutes * 60 * 1000);
-
-    return new Date(correctUTC);
+    return getDateFromIsoInTz(`${dateStr}T${timeStr}:00`, timezone);
 }
 
 /**
@@ -105,60 +55,55 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         return dayMap[dayStr] ?? 0;
     };
 
-    // Helper to find next trading day (skips weekends and holidays)
-    const findNextTradingDay = (startDate: Date): { nextOpen: Date; holidayName?: string } => {
-        let candidate = new Date(startDate);
-        let attempts = 0;
-        const maxAttempts = 14; // Don't loop forever
-
-        while (attempts < maxAttempts) {
-            const candidateDay = getDayInMarket(candidate);
-
-            // Skip weekends
-            if (candidateDay === 0) { // Sunday
-                candidate.setDate(candidate.getDate() + 1);
-                attempts++;
-                continue;
-            }
-            if (candidateDay === 6) { // Saturday
-                candidate.setDate(candidate.getDate() + 2);
-                attempts++;
-                continue;
-            }
-
-            // Check if this day is a holiday
-            const candidateDateStr = getMarketDateStr(candidate);
-            const year = parseInt(candidateDateStr.substring(0, 4));
-            const holidays = getMarketHolidays(market.id, year);
-            const holiday = holidays.find(h => h.date === candidateDateStr);
-
-            if (holiday && holiday.status === 'closed') {
-                // This is a holiday, skip to next day and get the holiday name for display
-                candidate.setDate(candidate.getDate() + 1);
-                attempts++;
-                continue;
-            }
-
-            // Found a valid trading day
-            // Check if there's an upcoming holiday (for the "next day is a holiday" case)
-            // Actually, we want to return the holiday info if the *previously checked* day was a holiday
-            // For now, just return the valid trading day
-            return { nextOpen: candidate };
-        }
-
-        // Fallback if we couldn't find a valid day
-        return { nextOpen: candidate };
-    };
-
-    // Helper to check if a specific date is a holiday
-    const getHolidayForDate = (date: Date): { name: string; status: string; closeTime?: string } | null => {
-        const dateStr = getMarketDateStr(date);
+    // Helper to check if a specific date (YYYY-MM-DD) is a holiday
+    const getHolidayForDateStr = (dateStr: string): Holiday | null => {
         const year = parseInt(dateStr.substring(0, 4));
         const holidays = getMarketHolidays(market.id, year);
         return holidays.find(h => h.date === dateStr) || null;
     };
 
-    const todayHoliday = getHolidayForDate(now);
+    // Helper to find the next trading date (skips weekends and holidays).
+    // Works on YYYY-MM-DD strings so day arithmetic can't drift across DST.
+    const findNextTradingDateStr = (startDateStr: string): string => {
+        let candidate = startDateStr;
+        const maxAttempts = 14; // Don't loop forever
+
+        for (let attempts = 0; attempts < maxAttempts; attempts++) {
+            const candidateDay = getDayOfWeekOfDateStr(candidate);
+
+            // Skip weekends
+            if (candidateDay === 0) { // Sunday
+                candidate = addDaysToDateStr(candidate, 1);
+                continue;
+            }
+            if (candidateDay === 6) { // Saturday
+                candidate = addDaysToDateStr(candidate, 2);
+                continue;
+            }
+
+            // Skip full-closure holidays
+            const holiday = getHolidayForDateStr(candidate);
+            if (holiday && holiday.status === 'closed') {
+                candidate = addDaysToDateStr(candidate, 1);
+                continue;
+            }
+
+            // Found a valid trading day
+            return candidate;
+        }
+
+        // Fallback if we couldn't find a valid day
+        return candidate;
+    };
+
+    // Helper to get the market's open instant on a specific date, re-deriving
+    // the timezone offset for that date so DST transitions between now and the
+    // next open don't skew the result
+    const openOnDate = (dateStr: string): Date =>
+        getDateFromIsoInTz(`${dateStr}T${openTime}:00`, market.timezone);
+
+    const todayStr = getMarketDateStr(now);
+    const todayHoliday = getHolidayForDateStr(todayStr);
 
     let holidayName: string | undefined;
 
@@ -167,9 +112,8 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         holidayName = todayHoliday.name;
         if (todayHoliday.status === 'closed') {
             // Find next trading day starting from tomorrow
-            const tomorrow = new Date(parseTimeInTimezone(openTime, market.timezone));
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const { nextOpen } = findNextTradingDay(tomorrow);
+            const nextTradingDateStr = findNextTradingDateStr(addDaysToDateStr(todayStr, 1));
+            const nextOpen = openOnDate(nextTradingDateStr);
 
             return {
                 isOpen: false,
@@ -185,21 +129,16 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         }
     }
 
-    const openDate = parseTimeInTimezone(openTime, market.timezone);
-    const closeDate = parseTimeInTimezone(closeTime, market.timezone);
     const dayInMarket = getDayInMarket(now);
 
     // Weekend handling - find next trading day (which checks for holidays too)
     if (dayInMarket === 0 || dayInMarket === 6) {
-        const daysUntilMonday = dayInMarket === 0 ? 1 : 2;
-        const potentialMonday = new Date(openDate);
-        potentialMonday.setDate(potentialMonday.getDate() + daysUntilMonday);
-
-        // Check if Monday (or the next weekday) is a holiday
-        const { nextOpen } = findNextTradingDay(potentialMonday);
+        const firstWeekdayStr = addDaysToDateStr(todayStr, dayInMarket === 0 ? 1 : 2);
+        const nextTradingDateStr = findNextTradingDateStr(firstWeekdayStr);
+        const nextOpen = openOnDate(nextTradingDateStr);
 
         // Check if the first weekday was a holiday to show the info
-        const mondayHoliday = getHolidayForDate(potentialMonday);
+        const mondayHoliday = getHolidayForDateStr(firstWeekdayStr);
 
         return {
             isOpen: false,
@@ -210,6 +149,9 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
             holidayName: mondayHoliday?.status === 'closed' ? mondayHoliday.name : undefined
         };
     }
+
+    const openDate = parseTimeInTimezone(openTime, market.timezone);
+    const closeDate = parseTimeInTimezone(closeTime, market.timezone);
 
     // Before market opens
     if (now < openDate) {
@@ -279,20 +221,15 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
     }
 
     // After market closes - calculate next open
-    let potentialNextOpen = new Date(openDate);
-    if (dayInMarket === 5) {
-        // Friday after close - check Monday
-        potentialNextOpen.setDate(potentialNextOpen.getDate() + 3);
-    } else {
-        // Regular day - check tomorrow
-        potentialNextOpen.setDate(potentialNextOpen.getDate() + 1);
-    }
+    // Friday after close - check Monday; regular day - check tomorrow
+    const nextDayStr = addDaysToDateStr(todayStr, dayInMarket === 5 ? 3 : 1);
 
-    // Find valid trading day (skipping holidays)
-    const { nextOpen } = findNextTradingDay(potentialNextOpen);
+    // Find valid trading day (skipping weekends and holidays)
+    const nextTradingDateStr = findNextTradingDateStr(nextDayStr);
+    const nextOpen = openOnDate(nextTradingDateStr);
 
     // Check if the immediate next day was a holiday to show info
-    const nextDayHoliday = getHolidayForDate(potentialNextOpen);
+    const nextDayHoliday = getHolidayForDateStr(nextDayStr);
 
     return {
         isOpen: false,

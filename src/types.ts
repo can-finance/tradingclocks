@@ -8,6 +8,7 @@ export interface Market {
     code: string;
     country: string;
     countryCode: string;
+    flag?: string;               // emoji flag, informational only (flagcdn images are used for display)
     timezone: string;
     openTime: string;
     closeTime: string;
@@ -39,12 +40,6 @@ export interface MarketStatus {
 export interface FormattedTime {
     time: string;
     tzAbbrev: string;
-}
-
-export interface Country {
-    code: string;
-    name: string;
-    region: string;
 }
 
 export interface MarketsByRegion {

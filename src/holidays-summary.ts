@@ -4,15 +4,22 @@ import { loadMarketsConfig } from './markets';
 import { loadHolidaysConfig, getMarketHolidays } from './holidays';
 import type { Market } from './types';
 import { getGMTOffset } from './timezone';
-import { REGIONS } from './constants';
+import { timeService } from './timeService';
+import { REGIONS, getFlagUrl } from './constants';
+import { escapeHtml } from './htmlUtils';
 
 // ============ Render Logic ============
 function renderHolidaysTable(markets: Market[]): void {
     const container = document.getElementById('holidays-container');
     if (!container) return;
 
-    const year = 2026;
+    const year = timeService.getNow().getFullYear();
     const regions = REGIONS;
+
+    // Update the year shown in the page heading and intro
+    document.querySelectorAll('[data-holidays-year]').forEach(el => {
+        el.textContent = String(year);
+    });
 
     // Render navigation
     const navContainer = document.getElementById('holidays-nav');
@@ -34,11 +41,11 @@ function renderHolidaysTable(markets: Market[]): void {
                 const holidays = getMarketHolidays(market.id, year);
                 if (holidays.length === 0) return; // Skip if no holidays (keep sync with main content)
 
-                const marketId = market.id.toLowerCase();
+                const marketId = escapeHtml(market.id.toLowerCase());
                 navHtml += `
                     <a href="#market-${marketId}" class="holidays-nav-link" data-market="${marketId}">
-                        <img class="market-item-flag" src="https://flagcdn.com/w40/${market.countryCode.toLowerCase()}.png" alt="${market.country}" />
-                        <span>${market.name}</span>
+                        <img class="market-item-flag" src="${getFlagUrl(market.countryCode)}" alt="${escapeHtml(market.country)}" />
+                        <span>${escapeHtml(market.name)}</span>
                     </a>
                 `;
             });
@@ -66,17 +73,16 @@ function renderHolidaysTable(markets: Market[]): void {
             const holidays = getMarketHolidays(market.id, year);
             if (holidays.length === 0) return;
 
-            const countryCode = market.countryCode.toLowerCase();
-            const marketId = market.id.toLowerCase();
+            const marketId = escapeHtml(market.id.toLowerCase());
 
             html += `
                 <div class="card glass-panel holiday-card" id="market-${marketId}">
                     <div class="market-header holiday-market-header">
                         <div class="holiday-market-info">
-                            <h3 class="holiday-market-name">${market.name}</h3>
+                            <h3 class="holiday-market-name">${escapeHtml(market.name)}</h3>
                             <div class="holiday-market-meta">
-                                <img class="market-item-flag holiday-flag-small" src="https://flagcdn.com/w80/${countryCode}.png" alt="${market.country}" />
-                                <div class="holiday-market-code">${market.code}</div>
+                                <img class="market-item-flag holiday-flag-small" src="${getFlagUrl(market.countryCode, 80)}" alt="${escapeHtml(market.country)}" />
+                                <div class="holiday-market-code">${escapeHtml(market.code)}</div>
                             </div>
                         </div>
                     </div>
@@ -107,13 +113,13 @@ function renderHolidaysTable(markets: Market[]): void {
                 if (holiday.status === 'closed') {
                     statusBadge = '<span class="badge badge-neutral">Closed</span>';
                 } else if (holiday.status === 'early-close') {
-                    statusBadge = `<span class="badge badge-active">Early Close<br><span class="badge-close-time">${holiday.closeTime || ''}</span></span>`;
+                    statusBadge = `<span class="badge badge-active">Early Close<br><span class="badge-close-time">${escapeHtml(holiday.closeTime || '')}</span></span>`;
                 }
 
                 html += `
                     <tr>
                         <td class="time-cell holiday-date-cell">${formattedDate}</td>
-                        <td class="holiday-name-cell">${holiday.name}</td>
+                        <td class="holiday-name-cell">${escapeHtml(holiday.name)}</td>
                         <td>${statusBadge}</td>
                     </tr>
                 `;

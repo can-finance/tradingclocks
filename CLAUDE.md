@@ -4,20 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Running the Dev Server
 
-Node.js is installed via **nvm inside WSL** — it is not available on the Windows PATH. All npm commands must be run through WSL:
+Node.js is available directly on the Windows PATH:
 
 ```bash
-# Install dependencies (first time or after pulling)
-wsl -e bash -c "source ~/.nvm/nvm.sh; cd /mnt/c/path/to/tradingclocks && npm install"
-
-# Start dev server (available at http://localhost:5173)
-wsl -e bash -c "source ~/.nvm/nvm.sh; cd /mnt/c/path/to/tradingclocks && npm run dev -- --host"
-
-# Production build (output to ./dist)
-wsl -e bash -c "source ~/.nvm/nvm.sh; cd /mnt/c/path/to/tradingclocks && npm run build"
+npm install    # install dependencies (first time or after pulling)
+npm run dev    # start dev server at http://localhost:5173
+npm run build  # production build (output to ./dist)
+npx tsc --noEmit  # type-check
 ```
 
 Deployment is automatic: every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which builds and deploys to GitHub Pages via `can-finance/tradingclocks`.
+
+Notable changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format).
 
 ## Architecture Overview
 
@@ -43,8 +41,8 @@ Both config files are fetched at runtime (not bundled), so they can be edited wi
 ### Key Modules
 
 **`src/timezone.ts`** — The most critical file. Contains all time logic:
-- `parseTimeInTimezone(timeStr, timezone)` — converts an `HH:MM` string into a UTC `Date` for today in the given timezone. Uses `Intl.DateTimeFormat` with full date+time components to correctly handle UTC±12 edge cases.
-- `getMarketStatus(market, overrides)` — returns a `MarketStatus` object with `isOpen`, `timeUntil`, `nextEvent`, holiday info, and lunch break state. This is called once per market per second.
+- `parseTimeInTimezone(timeStr, timezone)` — converts an `HH:MM` string into a UTC `Date` for today in the given timezone. Delegates to `getDateFromIsoInTz` in `src/dateUtils.ts`, which uses a two-pass `Intl.DateTimeFormat` offset lookup so DST transition days and UTC±12 edge cases resolve correctly.
+- `getMarketStatus(market, overrides)` — returns a `MarketStatus` object with `isOpen`, `timeUntil`, `nextEvent`, holiday info, and lunch break state. This is called once per market per second. Next-open times are computed by finding the next trading *date* (`YYYY-MM-DD` string, skipping weekends/holidays) and converting `date + openTime` in the market's timezone — never by adding days to a `Date` with `setDate`, which drifts across DST transitions.
 - `formatCountdown(ms)` — formats milliseconds as `HH:MM:SS` or `Xd HH:MM:SS`.
 
 **`src/timeService.ts`** — Singleton (`timeService`) that wraps `Date.now()`. All time reads in the app go through `timeService.getNow()`, enabling the Time Travel debug feature to simulate any date/time. Never call `new Date()` or `Date.now()` directly.

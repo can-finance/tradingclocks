@@ -48,14 +48,3 @@ export function getMarketHolidays(marketId: string, year: number): Holiday[] {
 
     return (marketData as Holiday[]) || [];
 }
-
-/**
- * Check if a specific date is a holiday for a market
- */
-export function getHolidayForDate(marketId: string, date: Date): Holiday | null {
-    const year = date.getFullYear();
-    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    const holidays = getMarketHolidays(marketId, year);
-    return holidays.find(h => h.date === dateStr) || null;
-}
