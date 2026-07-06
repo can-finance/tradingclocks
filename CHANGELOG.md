@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **2027 holiday calendars for NYSE/Nasdaq, XETRA, SIX, GPW, JPX (Tokyo), and
+  partial NZX**, sourced directly from each exchange's official site (previously
+  only New Year's Day was populated for every market's 2027 entry). Also added
+  `docs/holiday-calendar-sources.md`, a reference table of each exchange's
+  official holiday-calendar source URL and its current 2027 publication status,
+  so future updates don't require re-researching from scratch. (`public/holidays.json`)
+
+### Fixed
+
+- **`getMarketStatus` test for mid-session countdown was flaky in CI.** The test
+  set the simulated clock with `timeService.setTime()` without freezing it, so
+  the clock kept advancing in real time between the call and the assertion;
+  on a slower CI runner this produced an off-by-a-few-ms mismatch in
+  `timeUntil`. The test now calls `timeService.freeze()` before `setTime()`, so
+  the frozen instant is written directly instead of drifting. (`src/timezone.test.ts`)
+- CI's `node-version` was pinned to 20, which GitHub Actions runners no longer
+  support natively (silently forcing the job onto Node 24 with a deprecation
+  warning). Bumped to 24 to match. (`.github/workflows/deploy.yml`)
+
 ## [0.2.0] - 2026-07-05
 
 ### Added

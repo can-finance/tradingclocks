@@ -41,6 +41,10 @@ const tse: Market = {
 };
 
 function setNow(iso: string): void {
+    // Freeze first so setTime() writes the frozen instant directly, instead of
+    // an offset that keeps ticking forward with real time while the test runs
+    // (which made timeUntil assertions flaky by a few ms on slower runners).
+    timeService.freeze();
     timeService.setTime(new Date(iso));
 }
 

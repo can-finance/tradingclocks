@@ -1381,6 +1381,57 @@
                 "date": "2027-01-01",
                 "name": "New Year's Day",
                 "status": "closed"
+            },
+            {
+                "date": "2027-01-18",
+                "name": "Martin Luther King, Jr. Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-02-15",
+                "name": "Washington's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-26",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-31",
+                "name": "Memorial Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-06-18",
+                "name": "Juneteenth National Independence Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-07-05",
+                "name": "Independence Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-06",
+                "name": "Labor Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-11-25",
+                "name": "Thanksgiving Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-11-26",
+                "name": "Black Friday",
+                "status": "early-close",
+                "closeTime": "13:00"
+            },
+            {
+                "date": "2027-12-24",
+                "name": "Christmas Day (Observed)",
+                "status": "closed"
             }
         ],
         "nasdaq": "nyse",
@@ -1410,12 +1461,77 @@
                 "date": "2027-01-01",
                 "name": "New Year's Day",
                 "status": "closed"
+            },
+            {
+                "date": "2027-03-26",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-29",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-01",
+                "name": "Labour Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-25",
+                "name": "Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-26",
+                "name": "Boxing Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "New Year's Eve",
+                "status": "closed"
             }
         ],
         "six": [
             {
                 "date": "2027-01-01",
                 "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-26",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-29",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-06",
+                "name": "Ascension Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-17",
+                "name": "Whit Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "New Year's Eve",
                 "status": "closed"
             }
         ],
@@ -1458,6 +1574,51 @@
             {
                 "date": "2027-01-01",
                 "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-01-06",
+                "name": "Epiphany",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-26",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-29",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-03",
+                "name": "Constitution Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-27",
+                "name": "Corpus Christi",
+                "status": "closed"
+            },
+            {
+                "date": "2027-11-01",
+                "name": "All Saints' Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-11-11",
+                "name": "Independence Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-24",
+                "name": "Christmas Eve",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "New Year's Eve",
                 "status": "closed"
             }
         ],
@@ -1515,6 +1676,101 @@
                 "date": "2027-01-01",
                 "name": "New Year's Day",
                 "status": "closed"
+            },
+            {
+                "date": "2027-01-02",
+                "name": "Market Holiday (New Year)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-01-03",
+                "name": "Market Holiday (New Year)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-01-11",
+                "name": "Coming of Age Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-02-11",
+                "name": "National Foundation Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-02-23",
+                "name": "Emperor's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-21",
+                "name": "Vernal Equinox Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-22",
+                "name": "Vernal Equinox Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-04-29",
+                "name": "Showa Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-03",
+                "name": "Constitution Memorial Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-04",
+                "name": "Greenery Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-05",
+                "name": "Children's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-07-19",
+                "name": "Marine Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-08-11",
+                "name": "Mountain Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-20",
+                "name": "Respect for the Aged Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-23",
+                "name": "Autumnal Equinox Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-10-11",
+                "name": "Sports Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-11-03",
+                "name": "Culture Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-11-23",
+                "name": "Labor Thanksgiving Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "Market Holiday (Year-End)",
+                "status": "closed"
             }
         ],
         "hkex": [
@@ -1542,6 +1798,11 @@
             {
                 "date": "2027-01-01",
                 "name": "New Year's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-01-04",
+                "name": "Day after New Year's Day (Observed)",
                 "status": "closed"
             }
         ]
