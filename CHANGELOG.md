@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **A dedicated 2027 holidays page** (`holidays-2027.html`, `src/holidays-2027.ts`),
+  linked from the 2026 holidays page and back. Each market's card shows a
+  status badge — "Fully Updated," "Partially Updated," or "Awaiting Official
+  Dates" — based on the same publication status tracked in
+  `docs/holiday-calendar-sources.md`, so it's clear at a glance which 2027
+  calendars are still provisional.
+- **The app version in the dashboard footer** (`v{package version}`), read
+  from `package.json` at build time and injected via the `__APP_VERSION__`
+  global in `vite.config.ts`.
 - **2027 holiday calendars for NYSE/Nasdaq, XETRA, SIX, GPW, JPX (Tokyo), and
   partial NZX**, sourced directly from each exchange's official site (previously
   only New Year's Day was populated for every market's 2027 entry). Also added
@@ -17,6 +26,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- **Docker dev container never picked up host-side file edits.** Docker
+  Desktop's Windows/WSL2 bind mount doesn't forward inotify events, so Vite's
+  default file watcher never saw changes made from the Windows host — the
+  container kept serving whatever code was running at last boot. Enabled
+  polling (`CHOKIDAR_USEPOLLING=true` in `docker-compose.yml`, wired into
+  `server.watch.usePolling` in `vite.config.ts`) so edits now reliably trigger
+  a restart/HMR update.
 - **`getMarketStatus` test for mid-session countdown was flaky in CI.** The test
   set the simulated clock with `timeService.setTime()` without freezing it, so
   the clock kept advancing in real time between the call and the assertion;

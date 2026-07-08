@@ -5,9 +5,14 @@ services:
       dockerfile: Dockerfile.dev
     container_name: tradingclocks-dev
     volumes:
-      - .:/workspace                 # live edits reflect instantly
+      - .:/workspace                 # bind mount so file *contents* stay in sync
       - /workspace/node_modules      # isolate container's node_modules from host
     ports:
       - "5173:5173"
     environment:
       - NODE_ENV=development
+      # Docker Desktop's Windows/WSL2 bind mount doesn't reliably forward
+      # inotify events for host-side edits, so Vite's default file watcher
+      # never sees changes. Polling (see vite.config.ts) is the standard
+      # workaround; without it you must `docker compose restart` after edits.
+      - CHOKIDAR_USEPOLLING=true

@@ -118,6 +118,7 @@ async function init(): Promise<void> {
   renderMarketSelector();
   renderClocks();
   updateLocalTime();
+  renderVersionInfo();
 
   // Set up event listeners
   setupEventListeners();
@@ -127,6 +128,13 @@ async function init(): Promise<void> {
     renderClocks();
     updateLocalTime();
   }, TIMING.UPDATE_INTERVAL);
+}
+
+function renderVersionInfo(): void {
+  const el = document.getElementById('footer-version');
+  if (el) {
+    el.textContent = `v${__APP_VERSION__} · `;
+  }
 }
 
 // ============ Rendering ============
