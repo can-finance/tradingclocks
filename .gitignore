@@ -25,3 +25,9 @@ dist-ssr
 
 # Agent
 .agent/
+
+.claude/
+
+# Local screenshots
+screenshots/
+
