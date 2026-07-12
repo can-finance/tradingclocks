@@ -15,7 +15,7 @@ npx tsc --noEmit  # type-check
 
 Deployment is automatic: every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which builds and deploys to GitHub Pages via `can-finance/tradingclocks`.
 
-Notable changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format).
+Notable **user-facing** changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format). Dev-ops/internal changes (Docker config, CI pipeline tweaks, test flakiness fixes, tooling) do not belong in the changelog — it's meant for users of the site, not contributors.
 
 ## Architecture Overview
 

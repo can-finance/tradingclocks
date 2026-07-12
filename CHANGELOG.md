@@ -6,42 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-12
+
 ### Added
 
-- **A dedicated 2027 holidays page** (`holidays-2027.html`, `src/holidays-2027.ts`),
-  linked from the 2026 holidays page and back. Each market's card shows a
-  status badge — "Fully Updated," "Partially Updated," or "Awaiting Official
-  Dates" — based on the same publication status tracked in
-  `docs/holiday-calendar-sources.md`, so it's clear at a glance which 2027
-  calendars are still provisional.
-- **The app version in the dashboard footer** (`v{package version}`), read
-  from `package.json` at build time and injected via the `__APP_VERSION__`
-  global in `vite.config.ts`.
+- **Warsaw Stock Exchange (GPW)**, with 2026 holidays and DST dates.
+  (`public/markets-config.json`, `public/holidays.json`)
+- **A dedicated 2027 holidays page** (`holidays-2027.html`), linked from the
+  2026 holidays page and back. Each market's card shows a status badge —
+  "Fully Updated," "Partially Updated," or "Awaiting Official Dates" — so
+  it's clear at a glance which 2027 calendars are still provisional.
 - **2027 holiday calendars for NYSE/Nasdaq, XETRA, SIX, GPW, JPX (Tokyo), and
-  partial NZX**, sourced directly from each exchange's official site (previously
-  only New Year's Day was populated for every market's 2027 entry). Also added
-  `docs/holiday-calendar-sources.md`, a reference table of each exchange's
-  official holiday-calendar source URL and its current 2027 publication status,
-  so future updates don't require re-researching from scratch. (`public/holidays.json`)
+  partial NZX**, sourced directly from each exchange's official site.
+  (`public/holidays.json`)
+- **The app version in the dashboard footer.**
+- **SEO improvements**: `robots.txt` and `sitemap.xml` so search engines can
+  discover every page; Open Graph and Twitter share cards (with a preview
+  image) so links render properly when shared; structured data (JSON-LD) so
+  search engines recognize the site as a live tool.
 
 ### Fixed
 
-- **Docker dev container never picked up host-side file edits.** Docker
-  Desktop's Windows/WSL2 bind mount doesn't forward inotify events, so Vite's
-  default file watcher never saw changes made from the Windows host — the
-  container kept serving whatever code was running at last boot. Enabled
-  polling (`CHOKIDAR_USEPOLLING=true` in `docker-compose.yml`, wired into
-  `server.watch.usePolling` in `vite.config.ts`) so edits now reliably trigger
-  a restart/HMR update.
-- **`getMarketStatus` test for mid-session countdown was flaky in CI.** The test
-  set the simulated clock with `timeService.setTime()` without freezing it, so
-  the clock kept advancing in real time between the call and the assertion;
-  on a slower CI runner this produced an off-by-a-few-ms mismatch in
-  `timeUntil`. The test now calls `timeService.freeze()` before `setTime()`, so
-  the frozen instant is written directly instead of drifting. (`src/timezone.test.ts`)
-- CI's `node-version` was pinned to 20, which GitHub Actions runners no longer
-  support natively (silently forcing the job onto Node 24 with a deprecation
-  warning). Bumped to 24 to match. (`.github/workflows/deploy.yml`)
+- **NZX (New Zealand Exchange) showed a spurious "1 day" in its countdown.**
+  A GMT+12 offset calculation in `parseTimeInTimezone` was ambiguous at
+  exactly ±12 hours, so Auckland's close time was computed a full day out.
+  (`src/timezone.ts`)
 
 ## [0.2.0] - 2026-07-05
 
