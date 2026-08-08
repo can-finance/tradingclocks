@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Running the Dev Server
 
-Node.js is available directly on the Windows PATH:
+**Always run Node commands inside Docker** — never `npm install`/`npm run dev`/etc. directly on the host, whether via the Windows-native Node install or via WSL against the mounted project path (`/mnt/c/...`). Either of those installs `node_modules` straight into this OneDrive-synced folder, which is exactly what the containerized setup exists to avoid (see the global `node_modules`-in-OneDrive policy). If you ever find a stray `node_modules` directory here, delete it — it means a command bypassed Docker.
 
 ```bash
-npm install    # install dependencies (first time or after pulling)
-npm run dev    # start dev server at http://localhost:5173
-npm run build  # production build (output to ./dist)
-npx tsc --noEmit  # type-check
+docker compose up          # build (first time) and start the dev server at http://localhost:5173
+docker compose up --build  # rebuild the image after package.json changes
+docker compose exec tradingclocks npm run build      # production build (output to ./dist)
+docker compose exec tradingclocks npx tsc --noEmit    # type-check
 ```
 
 Deployment is automatic: every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which builds and deploys to GitHub Pages via `can-finance/tradingclocks`.
