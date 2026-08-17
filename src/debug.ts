@@ -1,6 +1,5 @@
 
 import { timeService } from './timeService';
-import './style.css'; // Re-use main styles for glassmorphism
 
 export class DebugUI {
     private container: HTMLElement;
@@ -167,11 +166,6 @@ export class DebugUI {
             }
         });
 
-        if (this.container.style.display === 'none') {
-            // When hidden, still ensuring default is clear could be good, but
-            // let's wait until interaction.
-        }
-
         document.getElementById('debug-reset')?.addEventListener('click', () => {
             timeService.reset();
             this.updateDisplay();
@@ -239,7 +233,8 @@ export class DebugUI {
     }
 
     private updateDisplay(): void {
-        if (this.container.style.display === 'none') return;
+        // Visibility is toggled via the 'visible' class, not inline style
+        if (!this.container.classList.contains('visible')) return;
 
         const now = timeService.getNow();
 

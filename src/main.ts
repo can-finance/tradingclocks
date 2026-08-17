@@ -2,7 +2,7 @@
  * Trading Clocks - Main Application (TypeScript)
  */
 
-import './style.css';
+// style.css is linked from index.html so it render-blocks in dev too
 if (import.meta.env.DEV) {
   import('./debug'); // Initialize Debug UI only in development
 }
@@ -19,11 +19,14 @@ import { timeService } from './timeService';
 import {
   getSelectedMarkets,
   saveSelectedMarkets,
-  getTimeOverrides
+  getTimeOverrides,
+  saveTheme,
+  getSidebarCollapsed,
+  saveSidebarCollapsed
 } from './storage';
-import { STORAGE_KEYS, TIMING, REGIONS, getFlagUrl, type Region } from './constants';
+import { TIMING, REGIONS, getFlagUrl, type Region } from './constants';
 import { escapeHtml } from './htmlUtils';
-import type { TimeOverrides } from './types';
+import type { FormattedTime, TimeOverrides } from './types';
 
 // ============ State ============
 let selectedMarketIds: string[] = [];
@@ -72,7 +75,7 @@ let elements: Elements;
 // ============ Theme ============
 function toggleTheme(): void {
   const isDark = document.documentElement.classList.toggle('dark-mode');
-  localStorage.setItem(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
+  saveTheme(isDark ? 'dark' : 'light');
   updateThemeIcon(isDark);
 }
 
@@ -86,9 +89,7 @@ function updateThemeIcon(isDark: boolean): void {
 
 // ============ Sidebar ============
 function initSidebar(): void {
-  const savedState = localStorage.getItem(STORAGE_KEYS.SIDEBAR);
-  const isCollapsed = savedState === 'collapsed';
-  if (isCollapsed) {
+  if (getSidebarCollapsed()) {
     document.getElementById('sidebar')?.classList.add('is-collapsed');
   }
 }
@@ -96,7 +97,7 @@ function initSidebar(): void {
 function toggleSidebar(): void {
   const sidebar = elements.sidebar;
   const isCollapsed = sidebar.classList.toggle('is-collapsed');
-  localStorage.setItem(STORAGE_KEYS.SIDEBAR, isCollapsed ? 'collapsed' : 'expanded');
+  saveSidebarCollapsed(isCollapsed);
 }
 
 // ============ Initialization ============
@@ -134,6 +135,10 @@ function renderVersionInfo(): void {
   const el = document.getElementById('footer-version');
   if (el) {
     el.textContent = `v${__APP_VERSION__} · `;
+  }
+  const yearEl = document.getElementById('footer-year');
+  if (yearEl) {
+    yearEl.textContent = String(timeService.getNow().getFullYear());
   }
 }
 
@@ -286,11 +291,208 @@ function renderProgressBar(
   }
 }
 
+/**
+ * Everything on a clock card that changes from one tick to the next,
+ * precomputed so full builds and in-place updates render identically.
+ */
+interface CardView {
+  statusClass: string;
+  statusLine: string; // plain text; escape before embedding in HTML
+  marketTime: FormattedTime;
+  countdownLabel: string;
+  countdownValue: string;
+  openMarketTime: FormattedTime;
+  openUserTime: FormattedTime;
+  closeMarketTime: FormattedTime;
+  closeUserTime: FormattedTime;
+  progressBarHtml: string;
+  hasOverride: boolean;
+}
+
+function computeCardView(
+  market: typeof markets[0],
+  status: ReturnType<typeof getMarketStatus>
+): CardView {
+  const override = timeOverrides[market.id];
+  const hasOverride = !!(override && (override.openTime || override.closeTime));
+  // Prefer the status's session times: they include holiday adjustments
+  // (early close, late open) that the raw config/override values don't
+  const effectiveOpenTime = status.effectiveOpenTime || override?.openTime || market.openTime;
+  const effectiveCloseTime = status.effectiveCloseTime || override?.closeTime || market.closeTime;
+
+  // Determine status class
+  let statusClass = 'is-closed';
+  let statusText = 'Closed';
+
+  if (status.isOnLunch) {
+    statusClass = 'is-on-lunch';
+    statusText = 'Lunch Break';
+  } else if (status.isOpen) {
+    // Check if closing soon (within 30 minutes)
+    if (status.timeUntil < TIMING.CLOSING_SOON_THRESHOLD && status.nextEvent === 'closes') {
+      statusClass = 'is-closing-soon';
+      statusText = 'Closing Soon';
+    } else if (status.nextEvent === 'lunch-starts' && status.timeUntil < TIMING.CLOSING_SOON_THRESHOLD) {
+      statusClass = 'is-open';
+      statusText = 'Lunch Soon';
+    } else {
+      statusClass = 'is-open';
+      statusText = 'Open';
+    }
+  } else if (!status.isWeekend && status.timeUntil < TIMING.OPENING_SOON_THRESHOLD) {
+    statusClass = 'is-opening-soon';
+    statusText = 'Opening Soon';
+  }
+
+  const statusLine = status.isTodayHoliday
+    ? `Holiday: ${status.holidayName}`
+    : status.isEarlyCloseToday && status.holidayName
+      ? `${statusText} · Early close: ${status.holidayName}`
+      : status.holidayName
+        ? `${statusText} · Next: ${status.holidayName}`
+        : statusText;
+
+  // Format current times
+  const now = timeService.getNow();
+  const marketTime = formatTimeInTimezone(now, market.timezone);
+  const userTz = getUserTimezone();
+
+  // Format open/close times in both timezones
+  const openDate = parseTimeInTimezone(effectiveOpenTime, market.timezone);
+  const closeDate = parseTimeInTimezone(effectiveCloseTime, market.timezone);
+
+  // Countdown label based on next event
+  let countdownLabel = 'Opens in';
+  if (status.nextEvent === 'closes') countdownLabel = 'Closes in';
+  else if (status.nextEvent === 'lunch-starts') countdownLabel = 'Lunch in';
+  else if (status.nextEvent === 'reopens') countdownLabel = 'Reopens in';
+  if (status.isTodayHoliday) countdownLabel = 'Reopens in';
+
+  return {
+    statusClass,
+    statusLine,
+    marketTime,
+    countdownLabel,
+    countdownValue: formatCountdown(status.timeUntil),
+    openMarketTime: formatTimeInTimezone(openDate, market.timezone),
+    openUserTime: formatTimeInTimezone(openDate, userTz),
+    closeMarketTime: formatTimeInTimezone(closeDate, market.timezone),
+    closeUserTime: formatTimeInTimezone(closeDate, userTz),
+    progressBarHtml: renderProgressBar(market, status, openDate, closeDate),
+    hasOverride
+  };
+}
+
+// The elements updateCard touches carry no surrounding whitespace in this
+// template, so their textContent round-trips exactly
+function buildCardHtml(market: typeof markets[0], view: CardView): string {
+  return `
+      <div class="clock-card ${view.statusClass}" data-market-id="${escapeHtml(market.id)}">
+        ${view.hasOverride ? '<div class="override-badge">Custom</div>' : ''}
+        <div class="clock-header">
+          <div class="clock-identity">
+            <div class="clock-info">
+              <h3>${escapeHtml(market.name)}</h3>
+              <div class="clock-meta">
+                <img class="clock-flag" src="${getFlagUrl(market.countryCode, 80)}" alt="${escapeHtml(market.country)}" />
+                <div class="clock-code">${escapeHtml(market.code)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clock-status-row">
+          <div class="clock-status">
+            <div class="status-indicator"></div>
+            <div class="status-text">${escapeHtml(view.statusLine)}</div>
+          </div>
+          <div class="market-now">
+            <span class="market-now-time">${view.marketTime.time}</span>
+            <span class="market-now-tz">${view.marketTime.tzAbbrev}</span>
+          </div>
+        </div>
+
+        <div class="clock-countdown">
+          <div class="countdown-label">${view.countdownLabel}</div>
+          <div class="countdown-value">${view.countdownValue}</div>
+        </div>
+
+        <div class="progress-bar-slot">${view.progressBarHtml}</div>
+
+        <div class="clock-schedule">
+          <div class="schedule-column">
+            <div class="schedule-label">Opens</div>
+            <div class="schedule-times">
+              <div class="schedule-row">
+                <span class="schedule-time">${view.openMarketTime.time}</span>
+                <span class="schedule-tz">${view.openMarketTime.tzAbbrev}</span>
+              </div>
+              <div class="schedule-row">
+                <span class="schedule-time">${view.openUserTime.time}</span>
+                <span class="schedule-tz">${view.openUserTime.tzAbbrev}</span>
+              </div>
+            </div>
+          </div>
+          <div class="schedule-column">
+            <div class="schedule-label">Closes</div>
+            <div class="schedule-times">
+              <div class="schedule-row">
+                <span class="schedule-time">${view.closeMarketTime.time}</span>
+                <span class="schedule-tz">${view.closeMarketTime.tzAbbrev}</span>
+              </div>
+              <div class="schedule-row">
+                <span class="schedule-time">${view.closeUserTime.time}</span>
+                <span class="schedule-tz">${view.closeUserTime.tzAbbrev}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+}
+
+function setText(root: Element, selector: string, value: string): void {
+  const el = root.querySelector(selector);
+  if (el && el.textContent !== value) el.textContent = value;
+}
+
+function updateCard(market: typeof markets[0], view: CardView): void {
+  const card = elements.clockGrid.querySelector(
+    `.clock-card[data-market-id="${CSS.escape(market.id)}"]`
+  );
+  if (!card) return;
+
+  const className = `clock-card ${view.statusClass}`;
+  if (card.className !== className) card.className = className;
+
+  setText(card, '.status-text', view.statusLine);
+  setText(card, '.market-now-time', view.marketTime.time);
+  setText(card, '.market-now-tz', view.marketTime.tzAbbrev);
+  setText(card, '.countdown-label', view.countdownLabel);
+  setText(card, '.countdown-value', view.countdownValue);
+
+  const slot = card.querySelector('.progress-bar-slot');
+  if (slot && slot.innerHTML !== view.progressBarHtml) slot.innerHTML = view.progressBarHtml;
+
+  const times = card.querySelectorAll('.schedule-time');
+  const tzs = card.querySelectorAll('.schedule-tz');
+  [view.openMarketTime, view.openUserTime, view.closeMarketTime, view.closeUserTime]
+    .forEach((formatted, i) => {
+      if (times[i] && times[i].textContent !== formatted.time) times[i].textContent = formatted.time;
+      if (tzs[i] && tzs[i].textContent !== formatted.tzAbbrev) tzs[i].textContent = formatted.tzAbbrev;
+    });
+}
+
+// Market ids currently in the grid, in display order; null when the grid shows
+// the empty state (or nothing yet)
+let renderedCardOrder: string[] | null = null;
+
 function renderClocks(): void {
   const selectedMarkets = markets.filter(m => selectedMarketIds.includes(m.id));
 
   if (selectedMarkets.length === 0) {
-    elements.clockGrid.innerHTML = `
+    if (renderedCardOrder !== null || !elements.clockGrid.querySelector('.empty-state')) {
+      elements.clockGrid.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">🌍</div>
         <div class="empty-state-text">
@@ -298,6 +500,8 @@ function renderClocks(): void {
         </div>
       </div>
     `;
+      renderedCardOrder = null;
+    }
     return;
   }
 
@@ -322,136 +526,26 @@ function renderClocks(): void {
       return a.originalIndex - b.originalIndex;
     });
 
-  let html = '';
+  const order = sortedMarkets.map(entry => entry.market.id);
+  const sameOrder = renderedCardOrder !== null
+    && order.length === renderedCardOrder.length
+    && order.every((id, i) => id === renderedCardOrder![i]);
 
-  for (const { market, status } of sortedMarkets) {
-    const override = timeOverrides[market.id];
-    const hasOverride = override && (override.openTime || override.closeTime);
-    const effectiveOpenTime = override?.openTime || market.openTime;
-    const effectiveCloseTime = override?.closeTime || market.closeTime;
-
-    // Determine status class
-    let statusClass = 'is-closed';
-    let statusText = 'Closed';
-
-    if (status.isOnLunch) {
-      statusClass = 'is-on-lunch';
-      statusText = 'Lunch Break';
-    } else if (status.isOpen) {
-      // Check if closing soon (within 30 minutes)
-      if (status.timeUntil < TIMING.CLOSING_SOON_THRESHOLD && status.nextEvent === 'closes') {
-        statusClass = 'is-closing-soon';
-        statusText = 'Closing Soon';
-      } else if (status.nextEvent === 'lunch-starts' && status.timeUntil < TIMING.CLOSING_SOON_THRESHOLD) {
-        statusClass = 'is-open';
-        statusText = 'Lunch Soon';
-      } else {
-        statusClass = 'is-open';
-        statusText = 'Open';
-      }
-    } else if (!status.isWeekend && status.timeUntil < TIMING.OPENING_SOON_THRESHOLD) {
-      statusClass = 'is-opening-soon';
-      statusText = 'Opening Soon';
-    }
-
-    // Format current times
-    const now = timeService.getNow();
-    const marketTime = formatTimeInTimezone(now, market.timezone);
-    const userTz = getUserTimezone();
-
-    // Format open/close times in both timezones
-    const openDate = parseTimeInTimezone(effectiveOpenTime, market.timezone);
-    const closeDate = parseTimeInTimezone(effectiveCloseTime, market.timezone);
-
-    const openMarketTime = formatTimeInTimezone(openDate, market.timezone);
-    const openUserTime = formatTimeInTimezone(openDate, userTz);
-    const closeMarketTime = formatTimeInTimezone(closeDate, market.timezone);
-    const closeUserTime = formatTimeInTimezone(closeDate, userTz);
-
-    // Countdown label based on next event
-    let countdownLabel = 'Opens in';
-    if (status.nextEvent === 'closes') countdownLabel = 'Closes in';
-    else if (status.nextEvent === 'lunch-starts') countdownLabel = 'Lunch in';
-    else if (status.nextEvent === 'reopens') countdownLabel = 'Reopens in';
-
-    // Calculate progress bar
-    const progressBarHtml = renderProgressBar(market, status, openDate, closeDate);
-
-    const holidayName = status.holidayName ? escapeHtml(status.holidayName) : undefined;
-
-    html += `
-      <div class="clock-card ${statusClass}" data-market-id="${escapeHtml(market.id)}">
-        ${hasOverride ? '<div class="override-badge">Custom</div>' : ''}
-        <div class="clock-header">
-          <div class="clock-identity">
-            <div class="clock-info">
-              <h3>${escapeHtml(market.name)}</h3>
-              <div class="clock-meta">
-                <img class="clock-flag" src="${getFlagUrl(market.countryCode, 80)}" alt="${escapeHtml(market.country)}" />
-                <div class="clock-code">${escapeHtml(market.code)}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="clock-status-row">
-          <div class="clock-status">
-            <div class="status-indicator"></div>
-            <div class="status-text">
-              ${status.isTodayHoliday
-        ? `Holiday: ${holidayName}`
-        : holidayName
-          ? `${statusText} · Next: ${holidayName}`
-          : statusText
-      }
-            </div>
-          </div>
-          <div class="market-now">
-            <span class="market-now-time">${marketTime.time}</span>
-            <span class="market-now-tz">${marketTime.tzAbbrev}</span>
-          </div>
-        </div>
-        
-        <div class="clock-countdown">
-          <div class="countdown-label">${status.isTodayHoliday ? 'Reopens in' : countdownLabel}</div>
-          <div class="countdown-value">${formatCountdown(status.timeUntil)}</div>
-        </div>
-        
-        ${progressBarHtml}
-        
-        <div class="clock-schedule">
-          <div class="schedule-column">
-            <div class="schedule-label">Opens</div>
-            <div class="schedule-times">
-              <div class="schedule-row">
-                <span class="schedule-time">${openMarketTime.time}</span>
-                <span class="schedule-tz">${openMarketTime.tzAbbrev}</span>
-              </div>
-              <div class="schedule-row">
-                <span class="schedule-time">${openUserTime.time}</span>
-                <span class="schedule-tz">${openUserTime.tzAbbrev}</span>
-              </div>
-            </div>
-          </div>
-          <div class="schedule-column">
-            <div class="schedule-label">Closes</div>
-            <div class="schedule-times">
-              <div class="schedule-row">
-                <span class="schedule-time">${closeMarketTime.time}</span>
-                <span class="schedule-tz">${closeMarketTime.tzAbbrev}</span>
-              </div>
-              <div class="schedule-row">
-                <span class="schedule-time">${closeUserTime.time}</span>
-                <span class="schedule-tz">${closeUserTime.tzAbbrev}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+  if (!sameOrder) {
+    // Card set or order changed: rebuild the grid
+    elements.clockGrid.innerHTML = sortedMarkets
+      .map(({ market, status }) => buildCardHtml(market, computeCardView(market, status)))
+      .join('');
+    renderedCardOrder = order;
+    return;
   }
 
-  elements.clockGrid.innerHTML = html;
+  // Same cards in the same order: update only the mutable text and the
+  // progress bar in place, so the DOM (and any text selection or hover state)
+  // survives the per-second tick instead of being rebuilt from scratch
+  for (const { market, status } of sortedMarkets) {
+    updateCard(market, computeCardView(market, status));
+  }
 }
 
 function updateLocalTime(): void {
@@ -518,16 +612,6 @@ function setupEventListeners(): void {
       elements.sidebar.classList.remove('is-open');
       elements.sidebarOverlay.classList.remove('is-active');
     });
-  });
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      const modal = document.getElementById('settings-modal');
-      if (modal?.classList.contains('is-active')) {
-        modal.classList.remove('is-active');
-      }
-    }
   });
 }
 

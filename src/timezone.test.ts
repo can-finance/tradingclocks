@@ -8,7 +8,8 @@ const HOLIDAYS_FIXTURE = {
     '2026': {
         nyse: [
             { date: '2026-09-07', name: 'Labor Day', status: 'closed' },
-            { date: '2026-11-27', name: 'Day After Thanksgiving', status: 'early-close', closeTime: '13:00' }
+            { date: '2026-11-27', name: 'Day After Thanksgiving', status: 'early-close', closeTime: '13:00' },
+            { date: '2026-12-24', name: 'Christmas Eve', status: 'early-close', openTime: '10:30', closeTime: '13:00' }
         ]
     },
     '2027': {
@@ -177,6 +178,28 @@ describe('getMarketStatus — holidays', () => {
         expect(s.isOpen).toBe(true);
         expect(s.holidayName).toBe('Day After Thanksgiving');
         expect(s.nextEventTime.toISOString()).toBe('2026-11-27T18:00:00.000Z'); // 13:00 EST
+    });
+
+    it('exposes the holiday-adjusted session times on an early-close day', () => {
+        setNow('2026-11-27T15:00:00Z'); // Fri 10:00 EST, early close 13:00
+        const s = getMarketStatus(nyse);
+        expect(s.isEarlyCloseToday).toBe(true);
+        expect(s.effectiveOpenTime).toBe('09:30');
+        expect(s.effectiveCloseTime).toBe('13:00');
+    });
+
+    it('uses a holiday late-open time for the open countdown', () => {
+        setNow('2026-12-24T13:00:00Z'); // Thu 08:00 EST, late open 10:30
+        const s = getMarketStatus(nyse);
+        expect(s.nextEvent).toBe('opens');
+        expect(s.nextEventTime.toISOString()).toBe('2026-12-24T15:30:00.000Z'); // 10:30 EST
+        expect(s.effectiveOpenTime).toBe('10:30');
+    });
+
+    it('targets the late open when the next trading day opens late', () => {
+        setNow('2026-12-23T22:00:00Z'); // Wed 17:00 EST, after close
+        const s = getMarketStatus(nyse);
+        expect(s.nextEventTime.toISOString()).toBe('2026-12-24T15:30:00.000Z'); // 10:30 EST
     });
 
     it('treats the market as closed after an early close', () => {

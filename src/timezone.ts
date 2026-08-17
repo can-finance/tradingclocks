@@ -5,7 +5,7 @@
 import type { Market, MarketStatus, FormattedTime, TimeOverride } from './types';
 import { timeService } from './timeService';
 import { getMarketHolidays, type Holiday } from './holidays';
-import { getDateFromIsoInTz, addDaysToDateStr, getDayOfWeekOfDateStr } from './dateUtils';
+import { getDateFromIsoInTz, addDaysToDateStr, getDayOfWeekOfDateStr, getCachedFormatter } from './dateUtils';
 
 /**
  * Parse a time string (HH:MM) and create a Date for today in the given timezone.
@@ -15,7 +15,7 @@ export function parseTimeInTimezone(timeStr: string, timezone: string): Date {
     const now = timeService.getNow();
 
     // Today's date in the target timezone (en-CA formats as YYYY-MM-DD)
-    const dateStr = new Intl.DateTimeFormat('en-CA', {
+    const dateStr = getCachedFormatter('en-CA', {
         timeZone: timezone,
         year: 'numeric',
         month: '2-digit',
@@ -36,7 +36,7 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
 
     // Helper to get date string in market timezone (YYYY-MM-DD)
     const getMarketDateStr = (date: Date): string => {
-        return new Intl.DateTimeFormat('en-CA', {
+        return getCachedFormatter('en-CA', {
             timeZone: market.timezone,
             year: 'numeric',
             month: '2-digit',
@@ -46,7 +46,7 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
 
     // Helper to get day of week in market timezone
     const getDayInMarket = (date: Date): number => {
-        const dayFormatter = new Intl.DateTimeFormat('en-US', {
+        const dayFormatter = getCachedFormatter('en-US', {
             timeZone: market.timezone,
             weekday: 'short'
         });
@@ -96,11 +96,16 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         return candidate;
     };
 
+    // A holiday can shift a date's open later (e.g. a half-day session);
+    // mirror scheduleMarkup, which already honors Holiday.openTime
+    const openTimeOnDate = (dateStr: string): string =>
+        getHolidayForDateStr(dateStr)?.openTime || openTime;
+
     // Helper to get the market's open instant on a specific date, re-deriving
     // the timezone offset for that date so DST transitions between now and the
     // next open don't skew the result
     const openOnDate = (dateStr: string): Date =>
-        getDateFromIsoInTz(`${dateStr}T${openTime}:00`, market.timezone);
+        getDateFromIsoInTz(`${dateStr}T${openTimeOnDate(dateStr)}:00`, market.timezone);
 
     const todayStr = getMarketDateStr(now);
     const todayHoliday = getHolidayForDateStr(todayStr);
@@ -150,8 +155,15 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         };
     }
 
-    const openDate = parseTimeInTimezone(openTime, market.timezone);
-    const closeDate = parseTimeInTimezone(closeTime, market.timezone);
+    // Today is a trading day: expose the holiday/override-adjusted session
+    // times so the UI's schedule columns and progress bar agree with the
+    // countdown on early-close and late-open days
+    const effectiveOpenTime = openTimeOnDate(todayStr);
+    const effectiveCloseTime = closeTime;
+    const isEarlyCloseToday = todayHoliday?.status === 'early-close' || undefined;
+
+    const openDate = openOnDate(todayStr);
+    const closeDate = getDateFromIsoInTz(`${todayStr}T${closeTime}:00`, market.timezone);
 
     // Before market opens
     if (now < openDate) {
@@ -161,7 +173,10 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
             timeUntil: openDate.getTime() - now.getTime(),
             nextEvent: 'opens',
             nextEventTime: openDate,
-            holidayName
+            holidayName,
+            isEarlyCloseToday,
+            effectiveOpenTime,
+            effectiveCloseTime
         };
     }
 
@@ -184,6 +199,9 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
                     nextEvent: 'reopens',
                     nextEventTime: lunchEndDate,
                     holidayName,
+                    isEarlyCloseToday,
+                    effectiveOpenTime,
+                    effectiveCloseTime,
                     isOnLunch: true,
                     lunchStart: lunchStartDate,
                     lunchEnd: lunchEndDate
@@ -199,6 +217,9 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
                     nextEvent: 'lunch-starts',
                     nextEventTime: lunchStartDate,
                     holidayName,
+                    isEarlyCloseToday,
+                    effectiveOpenTime,
+                    effectiveCloseTime,
                     isOnLunch: false,
                     lunchStart: lunchStartDate,
                     lunchEnd: lunchEndDate
@@ -214,6 +235,9 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
             nextEvent: 'closes',
             nextEventTime: closeDate,
             holidayName,
+            isEarlyCloseToday,
+            effectiveOpenTime,
+            effectiveCloseTime,
             isOnLunch: false,
             lunchStart: lunchStartDate,
             lunchEnd: lunchEndDate
@@ -237,7 +261,12 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
         timeUntil: nextOpen.getTime() - now.getTime(),
         nextEvent: 'opens',
         nextEventTime: nextOpen,
-        holidayName: nextDayHoliday?.status === 'closed' ? nextDayHoliday.name : undefined
+        // holidayName here describes the *next* day, so isEarlyCloseToday is
+        // deliberately omitted; the effective times still describe today's
+        // (completed) session
+        holidayName: nextDayHoliday?.status === 'closed' ? nextDayHoliday.name : undefined,
+        effectiveOpenTime,
+        effectiveCloseTime
     };
 }
 
@@ -265,14 +294,14 @@ export function formatCountdown(ms: number): string {
  * Format time in a specific timezone for display
  */
 export function formatTimeInTimezone(date: Date, timezone: string): FormattedTime {
-    const timeFormatter = new Intl.DateTimeFormat('en-US', {
+    const timeFormatter = getCachedFormatter('en-US', {
         timeZone: timezone,
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
     });
 
-    const tzFormatter = new Intl.DateTimeFormat('en-US', {
+    const tzFormatter = getCachedFormatter('en-US', {
         timeZone: timezone,
         timeZoneName: 'short'
     });
@@ -299,7 +328,7 @@ export function getUserTimezone(): string {
 export function getGMTOffset(timezone: string): number {
     try {
         const now = timeService.getNow();
-        const formatter = new Intl.DateTimeFormat('en-US', {
+        const formatter = getCachedFormatter('en-US', {
             timeZone: timezone,
             timeZoneName: 'shortOffset'
         });

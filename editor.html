@@ -31,6 +31,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+    <!-- Preload runtime config so the editor table isn't gated on this fetch
+         starting only after the JS bundle loads -->
+    <link rel="preload" href="/markets-config.json" as="fetch" crossorigin />
+
     <!-- Styles -->
     <link rel="stylesheet" href="src/style.css">
     <link rel="stylesheet" href="src/editor.css">

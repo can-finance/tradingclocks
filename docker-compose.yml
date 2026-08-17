@@ -1,4 +1,20 @@
 services:
+  # Production-build preview: `docker compose up preview` builds the site and
+  # serves dist/ at http://localhost:4173 — for testing the built site (with
+  # prerendered pages) locally. Not started by a plain `docker compose up`.
+  preview:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tradingclocks-preview
+    profiles: ["preview"]
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
+    ports:
+      - "4173:4173"
+    command: sh -c "npm run build && npx vite preview --host 0.0.0.0 --port 4173"
+
   tradingclocks:
     build:
       context: .

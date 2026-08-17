@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-17
+
+### Added
+
+- **An About page**, linked from the dashboard menu and footer: what the site
+  is, which exchanges it covers, where the data comes from, and how to report
+  an error.
+- **Full 2027 holiday calendars for the London, Korea, and Hong Kong stock
+  exchanges**, now published officially — all three read "Fully Updated" on
+  the 2027 page.
+
+### Changed
+
+- **Content pages are now prerendered at build time.** The holidays, market
+  hours, and DST tables arrive in the served HTML, so they display instantly,
+  work with JavaScript disabled, and can be indexed by search engines.
+- **Faster, smoother loading and updating.** Market and holiday config now
+  downloads in parallel with the page instead of after the scripts load, and
+  dashboard clock cards update in place each second instead of being rebuilt.
+
+### Fixed
+
+- **Early-close days now display consistently.** The closing time, progress
+  bar, and status line all follow the holiday-adjusted session ("Open · Early
+  close: Black Friday") instead of showing the normal close alongside an
+  early-close countdown.
+- **Two missing 2026 Korea Exchange closures** (3 June; 17 July, Constitution
+  Day, restored as a South Korean public holiday this year) — the exchange had
+  been shown as trading on both days.
+- **Holiday pages stay pinned to their own year** instead of the 2026 page
+  rolling over to the new year's calendar on January 1.
+
 ## [0.3.0] - 2026-07-12
 
 ### Added

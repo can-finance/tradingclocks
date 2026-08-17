@@ -21,7 +21,9 @@ export function getSelectedMarkets(defaultMarkets: string[]): string[] {
     } catch (e) {
         console.warn('Error reading selected markets from storage:', e);
     }
-    return defaultMarkets;
+    // Copy so callers mutating their selection can't pollute the caller's
+    // default array through the shared reference
+    return [...defaultMarkets];
 }
 
 /**
@@ -86,5 +88,40 @@ export function clearAllTimeOverrides(): void {
         localStorage.removeItem(STORAGE_KEYS.TIME_OVERRIDES);
     } catch (e) {
         console.warn('Error clearing time overrides from storage:', e);
+    }
+}
+
+/**
+ * Save the theme choice. Reading it back at page load happens in the inline
+ * <head> scripts (which must hardcode the key to run before any module loads).
+ */
+export function saveTheme(theme: 'dark' | 'light'): void {
+    try {
+        localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    } catch (e) {
+        console.warn('Error saving theme to storage:', e);
+    }
+}
+
+/**
+ * Get whether the sidebar was collapsed when last toggled
+ */
+export function getSidebarCollapsed(): boolean {
+    try {
+        return localStorage.getItem(STORAGE_KEYS.SIDEBAR) === 'collapsed';
+    } catch (e) {
+        console.warn('Error reading sidebar state from storage:', e);
+        return false;
+    }
+}
+
+/**
+ * Save the sidebar collapsed/expanded state
+ */
+export function saveSidebarCollapsed(collapsed: boolean): void {
+    try {
+        localStorage.setItem(STORAGE_KEYS.SIDEBAR, collapsed ? 'collapsed' : 'expanded');
+    } catch (e) {
+        console.warn('Error saving sidebar state to storage:', e);
     }
 }

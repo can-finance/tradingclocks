@@ -198,6 +198,16 @@
                 "status": "closed"
             },
             {
+                "date": "2026-06-03",
+                "name": "Temporary Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2026-07-17",
+                "name": "Constitution Day",
+                "status": "closed"
+            },
+            {
                 "date": "2026-08-17",
                 "name": "Liberation Day (Observed)",
                 "status": "closed"
@@ -233,7 +243,6 @@
                 "status": "closed"
             }
         ],
-        "nasdaq": "nyse",
         "euronext-paris": [
             {
                 "date": "2026-01-01",
@@ -1434,7 +1443,6 @@
                 "status": "closed"
             }
         ],
-        "nasdaq": "nyse",
         "tsx": [
             {
                 "date": "2027-01-01",
@@ -1447,6 +1455,53 @@
                 "date": "2027-01-01",
                 "name": "New Year's Day",
                 "status": "closed"
+            },
+            {
+                "date": "2027-03-26",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-29",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-03",
+                "name": "Early May Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-31",
+                "name": "Spring Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-08-30",
+                "name": "Summer Bank Holiday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
+            },
+            {
+                "date": "2027-12-27",
+                "name": "Christmas Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-28",
+                "name": "Boxing Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:30"
             }
         ],
         "euronext-paris": [
@@ -1669,6 +1724,81 @@
                 "date": "2027-01-01",
                 "name": "New Year's Day",
                 "status": "closed"
+            },
+            {
+                "date": "2027-02-08",
+                "name": "Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2027-02-09",
+                "name": "Lunar New Year (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-01",
+                "name": "Independence Movement Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-03",
+                "name": "Labor Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-05",
+                "name": "Children's Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-13",
+                "name": "Buddha's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-07-19",
+                "name": "Constitution Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-08-16",
+                "name": "Liberation Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-14",
+                "name": "Chuseok (Harvest Festival)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-15",
+                "name": "Chuseok (Harvest Festival)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-16",
+                "name": "Chuseok (Harvest Festival)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-10-04",
+                "name": "National Foundation Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-10-11",
+                "name": "Hangul Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-27",
+                "name": "Christmas Day (Observed)",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "End of Year Market Close",
+                "status": "closed"
             }
         ],
         "tse": [
@@ -1778,6 +1908,84 @@
                 "date": "2027-01-01",
                 "name": "New Year's Day",
                 "status": "closed"
+            },
+            {
+                "date": "2027-02-05",
+                "name": "Lunar New Year Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            },
+            {
+                "date": "2027-02-08",
+                "name": "Third Day of Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2027-02-09",
+                "name": "Fourth Day of Lunar New Year",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-26",
+                "name": "Good Friday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-03-29",
+                "name": "Easter Monday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-04-05",
+                "name": "Ching Ming Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2027-05-13",
+                "name": "Buddha's Birthday",
+                "status": "closed"
+            },
+            {
+                "date": "2027-06-09",
+                "name": "Tuen Ng Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2027-07-01",
+                "name": "Hong Kong SAR Establishment Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-09-16",
+                "name": "The Day Following Mid-Autumn Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2027-10-01",
+                "name": "National Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-10-08",
+                "name": "Chung Yeung Festival",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-24",
+                "name": "Christmas Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
+            },
+            {
+                "date": "2027-12-27",
+                "name": "The First Weekday After Christmas Day",
+                "status": "closed"
+            },
+            {
+                "date": "2027-12-31",
+                "name": "New Year's Eve",
+                "status": "early-close",
+                "closeTime": "12:00"
             }
         ],
         "sgx": [

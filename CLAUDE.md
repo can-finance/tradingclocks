@@ -9,13 +9,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 docker compose up          # build (first time) and start the dev server at http://localhost:5173
 docker compose up --build  # rebuild the image after package.json changes
+docker compose up preview  # production build + serve dist at http://localhost:4173 (tests prerendered pages)
 docker compose exec tradingclocks npm run build      # production build (output to ./dist)
 docker compose exec tradingclocks npx tsc --noEmit    # type-check
 ```
 
 Deployment is automatic: every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which builds and deploys to GitHub Pages via `can-finance/tradingclocks`.
 
-Notable **user-facing** changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format). Dev-ops/internal changes (Docker config, CI pipeline tweaks, test flakiness fixes, tooling) do not belong in the changelog — it's meant for users of the site, not contributors.
+Notable **user-facing** changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format). Keep entries high-level: significant user-facing changes and major code-structure changes qualify; minor bug fixes and polish live in the git history only. Dev-ops/internal changes (Docker config, CI pipeline tweaks, test flakiness fixes, tooling) do not belong in the changelog — it's meant for users of the site, not contributors.
 
 ## Architecture Overview
 
@@ -27,7 +28,8 @@ This is a **vanilla TypeScript + Vite** single-page app with no frontend framewo
 | `editor.html` | `src/editor.ts` | UI to view/override market hours |
 | `schedule.html` | `src/schedule.ts` | Next-weekday market schedule table |
 | `dst.html` | `src/dst.ts` | DST transition reference tool |
-| `holidays-summary.html` | `src/holidays-summary.ts` | Holiday calendar view |
+| `holidays-summary.html` | `src/holidaysPage.ts` | 2026 holiday calendar view |
+| `holidays-2027.html` | `src/holidaysPage.ts` | 2027 holiday calendar view |
 
 ### Core Data Flow
 
@@ -37,6 +39,33 @@ public/holidays.json        ──→  holidays.ts (loadHolidaysConfig) ──�
 ```
 
 Both config files are fetched at runtime (not bundled), so they can be edited without a rebuild.
+
+### Build-Time Prerendering
+
+The content pages would otherwise serve an empty container and build their tables
+from JSON after load, which left search engines reading them as thin content.
+`scripts/prerender.ts` is a Vite plugin (build only — dev still renders client-side)
+that runs the same markup builders the browser uses and writes the result into the
+HTML. Pages opt in with a placeholder comment inside the container:
+
+```html
+<div id="dst-table-container"><!--prerender:dst--></div>
+```
+
+The builders live in `src/holidaysMarkup.ts`, `src/dstMarkup.ts`, and
+`src/scheduleMarkup.ts`. They are pure string functions with no DOM or network
+access so the same code runs in Node and the browser — **keep them that way**, or
+the build will break. A placeholder naming an unknown builder, or one that yields
+no markup, fails the build rather than silently shipping an empty page again.
+
+Client scripts skip re-rendering when the container already has children (i.e. in
+production). `schedule.ts` is the exception: it always re-renders, because the
+prerender can only emit market-local hours and the page's job is converting them
+to the visitor's timezone.
+
+Each holidays page declares its year on the container (`data-year="2026"`), which
+both the prerender and the browser read, so they can't disagree about which year
+is on screen.
 
 ### Key Modules
 
@@ -49,7 +78,7 @@ Both config files are fetched at runtime (not bundled), so they can be edited wi
 
 **`src/markets.ts`** — Loads and exports the `markets` array from `markets-config.json`. Markets are sorted by GMT offset descending (Asia-Pacific first). Falls back to NYSE-only hardcoded default if the fetch fails.
 
-**`src/holidays.ts`** — Loads `holidays.json` into a runtime cache. `getMarketHolidays(marketId, year)` supports string aliases so e.g. `"nasdaq": "nyse"` shares the same holiday list.
+**`src/holidays.ts`** — Loads `holidays.json` into a runtime cache. `getMarketHolidays(marketId, year)` supports string aliases (a market id mapped to another id string shares that market's holiday list). No alias is currently in the data; the mechanism is kept for markets that share a calendar.
 
 **`src/storage.ts`** — All `localStorage` access is here. Persists selected market IDs (`tradingClocks_selectedMarkets`) and per-market time overrides (`tradingClocks_timeOverrides`).
 

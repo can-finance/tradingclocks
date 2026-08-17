@@ -1399,6 +1399,45 @@ h1:has(.site-icon-h1) {
   color: var(--text-primary);
 }
 
+/* ============ About Page ============ */
+.about-content {
+  max-width: 780px;
+}
+
+.about-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.about-card h2 {
+  margin-bottom: 0.75rem;
+}
+
+.about-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.about-card p + p {
+  margin-top: 0.75rem;
+}
+
+.about-card a {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.about-card strong {
+  color: var(--text-primary);
+}
+
 @media (max-width: 600px) {
   .local-date {
     text-align: center;

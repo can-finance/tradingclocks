@@ -19,8 +19,10 @@ export const TIMING = {
 } as const;
 
 /**
- * Flag image URL from flagcdn.com (size = image width in px)
+ * Flag image URL from flagcdn.com (size = image width in px).
+ * The country code is URL-encoded because every caller interpolates the
+ * result into a src="..." attribute without further escaping.
  */
 export function getFlagUrl(countryCode: string, size: 40 | 80 = 40): string {
-    return `https://flagcdn.com/w${size}/${countryCode.toLowerCase()}.png`;
+    return `https://flagcdn.com/w${size}/${encodeURIComponent(countryCode.toLowerCase())}.png`;
 }

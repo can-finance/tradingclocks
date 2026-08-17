@@ -47,6 +47,15 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Stylesheet linked from HTML (not imported in JS) so it render-blocks in
+         dev too — otherwise the page paints unstyled until the module loads -->
+    <link rel="stylesheet" href="src/style.css">
+
+    <!-- Preload runtime config so the timezone-converted re-render replaces
+         the prerendered market-local table as early as possible -->
+    <link rel="preload" href="/markets-config.json" as="fetch" crossorigin />
+    <link rel="preload" href="/holidays.json" as="fetch" crossorigin />
 </head>
 
 <body>
@@ -64,9 +73,7 @@
 
             <div class="container">
                 <div class="card glass-panel">
-                    <div id="schedule-container">
-                        <!-- Populated by JavaScript -->
-                    </div>
+                    <div id="schedule-container"><!--prerender:schedule--></div>
                 </div>
             </div>
         </main>

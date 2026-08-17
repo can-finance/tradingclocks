@@ -44,6 +44,10 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Stylesheet linked from HTML (not imported in JS) so it render-blocks in
+         dev too — otherwise the page paints unstyled until the module loads -->
+    <link rel="stylesheet" href="src/style.css">
 </head>
 
 <body>
@@ -65,9 +69,7 @@
                     <div class="holidays-sidebar-header">
                         <h3>Markets</h3>
                     </div>
-                    <nav id="holidays-nav" class="holidays-nav">
-                        <!-- Populated by JavaScript -->
-                    </nav>
+                    <nav id="holidays-nav" class="holidays-nav"><!--prerender:holidays-nav--></nav>
                 </aside>
 
                 <!-- Main Content -->
@@ -80,15 +82,13 @@
                         schedule.
                     </div>
 
-                    <div id="holidays-container">
-                        <!-- Populated by JavaScript -->
-                    </div>
+                    <div id="holidays-container" data-year="2027"><!--prerender:holidays-content--></div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script type="module" src="src/holidays-2027.ts"></script>
+    <script type="module" src="src/holidaysPage.ts"></script>
 
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'

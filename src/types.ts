@@ -32,6 +32,9 @@ export interface MarketStatus {
     nextEventTime: Date;
     holidayName?: string;
     isTodayHoliday?: boolean;
+    isEarlyCloseToday?: boolean; // True when today's holiday shortens the session
+    effectiveOpenTime?: string;  // Today's open (HH:MM) after override/holiday adjustments; unset when today isn't a trading day
+    effectiveCloseTime?: string; // Today's close (HH:MM) after override/holiday adjustments; unset when today isn't a trading day
     isOnLunch?: boolean;         // True if currently in lunch break
     lunchStart?: Date;           // Parsed lunchStart time for today
     lunchEnd?: Date;             // Parsed lunchEnd time for today

@@ -48,6 +48,15 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+  <!-- Stylesheet linked from HTML (not imported in JS) so it render-blocks in
+       dev too — otherwise the page paints unstyled until the module loads -->
+  <link rel="stylesheet" href="src/style.css">
+
+  <!-- Preload runtime config so the first clock render isn't gated on these
+       fetches starting only after the JS bundle loads -->
+  <link rel="preload" href="/markets-config.json" as="fetch" crossorigin />
+  <link rel="preload" href="/holidays.json" as="fetch" crossorigin />
+
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
@@ -93,6 +102,7 @@
         <a href="dst.html" class="sidebar-nav-link"><img src="/icons/dst.svg" class="site-icon" alt=""> DST Schedules</a>
         <a href="holidays-summary.html" class="sidebar-nav-link"><img src="/icons/holidays.svg" class="site-icon" alt=""> Holidays</a>
         <a href="editor.html" class="sidebar-nav-link"><img src="/icons/override.svg" class="site-icon" alt=""> Override Hours</a>
+        <a href="about.html" class="sidebar-nav-link"><img src="/icons/globe.svg" class="site-icon" alt=""> About</a>
       </nav>
     </aside>
 
@@ -133,11 +143,11 @@
       <footer class="footer">
         <div class="footer-content">
           <div class="footer-copyright">
-            &copy; 2026 TradingClocks.com
+            &copy; <span id="footer-year">2026</span> TradingClocks.com
           </div>
           <div class="footer-feedback">
             <span class="footer-version" id="footer-version"></span>
-            Feedback? <a href="mailto:info@tradingclocks.com">info@tradingclocks.com</a>
+            <a href="about.html">About</a> · Feedback? <a href="mailto:info@tradingclocks.com">info@tradingclocks.com</a>
           </div>
           <div class="footer-disclaimer">
             The stock exchange hours and holiday schedules provided on this site are for informational purposes only. While

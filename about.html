@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+
+    <!-- Theme Flash Prevention - Must run FIRST before any CSS loads -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('trading-clocks-theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                // Set inline style for instant background color
+                document.documentElement.style.backgroundColor = '#0a0a0f';
+            }
+        })();
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About | Trading Clocks</title>
+    <meta name="description" content="What Trading Clocks is, which stock exchanges it covers, where its market hours and holiday data come from, and how to report an error." />
+    <link rel="canonical" href="https://tradingclocks.com/about.html" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tradingclocks.com/about.html" />
+    <meta property="og:title" content="About | Trading Clocks" />
+    <meta property="og:description" content="What Trading Clocks is, which stock exchanges it covers, where its market hours and holiday data come from, and how to report an error." />
+    <meta property="og:image" content="https://tradingclocks.com/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://tradingclocks.com/about.html" />
+    <meta property="twitter:title" content="About | Trading Clocks" />
+    <meta property="twitter:description" content="What Trading Clocks is, which stock exchanges it covers, where its market hours and holiday data come from, and how to report an error." />
+    <meta property="twitter:image" content="https://tradingclocks.com/og-image.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Stylesheet linked from HTML (not imported in JS) so it render-blocks in
+         dev too — otherwise the page paints unstyled until the module loads -->
+    <link rel="stylesheet" href="src/style.css">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "url": "https://tradingclocks.com/about.html",
+      "name": "About Trading Clocks",
+      "description": "What Trading Clocks is, which stock exchanges it covers, where its market hours and holiday data come from, and how to report an error.",
+      "about": {
+        "@type": "WebApplication",
+        "name": "Trading Clocks",
+        "url": "https://tradingclocks.com/",
+        "applicationCategory": "FinanceApplication"
+      }
+    }
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Main Content -->
+        <main class="main-content no-sidebar">
+            <header class="header">
+                <div class="header-title">
+                    <a href="index.html" class="header-back-link">&larr; Back</a>
+                    <h1><img src="/icons/globe.svg" class="site-icon site-icon-h1" alt=""> About</h1>
+                </div>
+                <div class="header-actions">
+                </div>
+            </header>
+
+            <div class="container about-content">
+                <div class="card glass-panel about-card">
+                    <h2>What is Trading Clocks?</h2>
+                    <p>
+                        Trading Clocks is a free dashboard for tracking when the world's stock markets are open.
+                        Each exchange gets a live clock in its own timezone with an open/closed status and a
+                        countdown to the next open or close. It accounts for weekends, public holidays,
+                        early-close days, lunch breaks, and daylight saving time transitions.
+                    </p>
+                    <p>
+                        Alongside the main dashboard there is a daily <a href="schedule.html">market hours
+                        schedule</a>, a <a href="dst.html">DST transition reference</a>, and holiday calendars
+                        for <a href="holidays-summary.html">2026</a> and <a href="holidays-2027.html">2027</a>.
+                    </p>
+                </div>
+
+                <div class="card glass-panel about-card">
+                    <h2>Coverage</h2>
+                    <p>
+                        The site covers major stock exchanges across the Americas, Europe, and Asia-Pacific,
+                        including every MSCI Developed Market: from NYSE and Nasdaq through the European
+                        exchanges (LSE, Euronext, XETRA, SIX, and others) to Tokyo, Hong Kong, Sydney, and
+                        beyond. Coverage is limited to cash equity markets.
+                    </p>
+                </div>
+
+                <div class="card glass-panel about-card">
+                    <h2>Where the data comes from</h2>
+                    <p>
+                        Trading hours and holiday calendars are sourced directly from each exchange's
+                        <strong>own official publications</strong>.
+                    </p>
+                    <p>
+                        Exchanges typically publish the following year's holiday calendar during the current year.
+                        Information here is updated as exchanges publish official times and holidays, never from
+                        unconfirmed dates.
+                        The <a href="holidays-2027.html">2027 holidays page</a>
+                        marks each market as fully updated, partially updated, or still awaiting official dates,
+                        so you can see exactly which calendars are confirmed.
+                    </p>
+                    <p>
+                        Daylight saving time is handled by the browser's built-in IANA timezone database, not by
+                        hand-maintained dates, so clocks stay correct through every DST transition automatically.
+                    </p>
+                </div>
+
+                <div class="card glass-panel about-card">
+                    <h2>Spotted an error?</h2>
+                    <p>
+                        If a market's hours, holidays, or status look wrong, please tell us; corrections are
+                        genuinely appreciated and usually applied quickly. Email
+                        <a href="mailto:info@tradingclocks.com">info@tradingclocks.com</a> with the market and
+                        the date in question.
+                    </p>
+                </div>
+
+                <div class="schedule-intro">
+                    The stock exchange hours and holiday schedules provided on this site are for informational
+                    purposes only. While believed to be accurate, TradingClocks.com makes no guarantees regarding
+                    the correctness or completeness of the data. Please confirm official trading hours directly
+                    with the respective exchanges before making any trading decisions.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "980d37ebe6cc44f5b4bba66f27483707"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+
+</html>

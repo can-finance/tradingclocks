@@ -1,12 +1,14 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import { readFileSync } from 'node:fs';
+import { prerender } from './scripts/prerender';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
 
 export default defineConfig({
     // Use root base path for custom domain
     base: '/',
+    plugins: [prerender()],
     define: {
         __APP_VERSION__: JSON.stringify(pkg.version),
     },
@@ -33,6 +35,7 @@ export default defineConfig({
                 schedule: 'schedule.html',
                 holidays: 'holidays-summary.html',
                 holidays2027: 'holidays-2027.html',
+                about: 'about.html',
             },
         },
     },

@@ -15,11 +15,29 @@ export function getNextWeekday(date: Date): Date {
 }
 
 /**
+ * Cached Intl.DateTimeFormat lookup. Formatter construction is the expensive
+ * part of Intl, and the dashboard formats in every market timezone once per
+ * second — reusing formatters cuts most of that cost. Callers pass literal
+ * option objects, so the JSON key is stable per call site.
+ */
+const formatterCache = new Map<string, Intl.DateTimeFormat>();
+
+export function getCachedFormatter(locale: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+    const key = `${locale}|${options.timeZone}|${JSON.stringify(options)}`;
+    let formatter = formatterCache.get(key);
+    if (!formatter) {
+        formatter = new Intl.DateTimeFormat(locale, options);
+        formatterCache.set(key, formatter);
+    }
+    return formatter;
+}
+
+/**
  * Get the UTC offset (in ms) of a timezone at a given instant.
  */
 function getTimezoneOffsetMs(instant: Date, timezone: string): number {
     // Format with full date so day-boundary crossings (e.g. UTC+12/+13) are handled correctly
-    const fmt = new Intl.DateTimeFormat('en-US', {
+    const fmt = getCachedFormatter('en-US', {
         timeZone: timezone,
         year: 'numeric', month: '2-digit', day: '2-digit',
         hour: '2-digit', minute: '2-digit',
@@ -78,6 +96,15 @@ export function addDaysToDateStr(dateStr: string, days: number): string {
 export function getDayOfWeekOfDateStr(dateStr: string): number {
     const [y, m, d] = dateStr.split('-').map(Number);
     return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
+/**
+ * Format a Date as a YYYY-MM-DD string using its local calendar date.
+ */
+export function toDateStr(date: Date): string {
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${mm}-${dd}`;
 }
 
 /**

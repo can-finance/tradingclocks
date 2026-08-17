@@ -7,7 +7,7 @@ const FIXTURE = {
             { date: '2026-01-01', name: "New Year's Day", status: 'closed' },
             { date: '2026-12-24', name: 'Christmas Eve', status: 'early-close', closeTime: '13:00' }
         ],
-        nasdaq: 'nyse'
+        'nyse-alias': 'nyse'
     }
 };
 
@@ -28,7 +28,7 @@ describe('getMarketHolidays', () => {
     });
 
     it('resolves string aliases to the target market\'s list', () => {
-        expect(getMarketHolidays('nasdaq', 2026)).toEqual(getMarketHolidays('nyse', 2026));
+        expect(getMarketHolidays('nyse-alias', 2026)).toEqual(getMarketHolidays('nyse', 2026));
     });
 
     it('returns an empty list for an unknown market', () => {

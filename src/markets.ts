@@ -65,7 +65,8 @@ export function getMarketsByRegion(): MarketsByRegion {
 }
 
 /**
- * Get unique markets per country (eliminates duplicates like NYSE/NASDAQ)
+ * Get one market per country, so country-keyed views (schedule and DST pages)
+ * list each country once even if it hosts several tracked exchanges
  */
 export function getUniqueMarketsPerCountry(marketList: Market[] = markets): Market[] {
     const uniqueCountries = new Map<string, Market>();

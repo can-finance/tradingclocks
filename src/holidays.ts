@@ -24,7 +24,6 @@ export async function loadHolidaysConfig(): Promise<void> {
             throw new Error(`Failed to load holidays: ${response.status}`);
         }
         holidaysCache = await response.json();
-        console.log('Holidays loaded:', Object.keys(holidaysCache));
     } catch (error) {
         console.error('Error loading holidays config:', error);
         // Fallback or empty
@@ -41,7 +40,7 @@ export function getMarketHolidays(marketId: string, year: number): Holiday[] {
 
     let marketData = yearData[marketId];
 
-    // Handle aliases (e.g. "nasdaq": "nyse")
+    // Handle aliases (a market id mapped to a string shares that market's list)
     if (typeof marketData === 'string') {
         marketData = yearData[marketData];
     }
