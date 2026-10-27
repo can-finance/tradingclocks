@@ -159,11 +159,30 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
     // times so the UI's schedule columns and progress bar agree with the
     // countdown on early-close and late-open days
     const effectiveOpenTime = openTimeOnDate(todayStr);
-    const effectiveCloseTime = closeTime;
+    let effectiveCloseTime = closeTime;
     const isEarlyCloseToday = todayHoliday?.status === 'early-close' || undefined;
 
     const openDate = openOnDate(todayStr);
-    const closeDate = getDateFromIsoInTz(`${todayStr}T${closeTime}:00`, market.timezone);
+    let closeDate = getDateFromIsoInTz(`${todayStr}T${closeTime}:00`, market.timezone);
+
+    // Lunch only applies when the session runs past it. A half day that closes
+    // by lunch start (SGX/HKEX close at noon) has no lunch break, and one that
+    // closes mid-lunch effectively ends at lunch start — mirrors scheduleMarkup
+    let lunchStartDate: Date | undefined;
+    let lunchEndDate: Date | undefined;
+
+    if (market.lunchStart && market.lunchEnd) {
+        const lunchStart = parseTimeInTimezone(market.lunchStart, market.timezone);
+        const lunchEnd = parseTimeInTimezone(market.lunchEnd, market.timezone);
+
+        if (closeDate >= lunchEnd) {
+            lunchStartDate = lunchStart;
+            lunchEndDate = lunchEnd;
+        } else if (closeDate > lunchStart) {
+            closeDate = lunchStart;
+            effectiveCloseTime = market.lunchStart;
+        }
+    }
 
     // Before market opens
     if (now < openDate) {
@@ -182,14 +201,7 @@ export function getMarketStatus(market: Market, overrides: Partial<TimeOverride>
 
     // Market is open (or on lunch break)
     if (now >= openDate && now < closeDate) {
-        // Parse lunch break times if they exist
-        let lunchStartDate: Date | undefined;
-        let lunchEndDate: Date | undefined;
-
-        if (market.lunchStart && market.lunchEnd) {
-            lunchStartDate = parseTimeInTimezone(market.lunchStart, market.timezone);
-            lunchEndDate = parseTimeInTimezone(market.lunchEnd, market.timezone);
-
+        if (lunchStartDate && lunchEndDate) {
             // Check if currently on lunch break
             if (now >= lunchStartDate && now < lunchEndDate) {
                 return {

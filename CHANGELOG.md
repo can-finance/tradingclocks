@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-10-26
+
+### Added
+
+- **Full 2027 holiday calendars for Nasdaq Stockholm, Copenhagen and Helsinki,
+  the Australian Securities Exchange, and Wiener Börse**, now published
+  officially. Singapore's 2027 closures are in too (half days still to come).
+
 ## [0.4.0] - 2026-08-17
 
 ### Added
@@ -19,133 +27,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- **Content pages are now prerendered at build time.** The holidays, market
-  hours, and DST tables arrive in the served HTML, so they display instantly,
-  work with JavaScript disabled, and can be indexed by search engines.
-- **Faster, smoother loading and updating.** Market and holiday config now
-  downloads in parallel with the page instead of after the scripts load, and
-  dashboard clock cards update in place each second instead of being rebuilt.
-
-### Fixed
-
-- **Early-close days now display consistently.** The closing time, progress
-  bar, and status line all follow the holiday-adjusted session ("Open · Early
-  close: Black Friday") instead of showing the normal close alongside an
-  early-close countdown.
-- **Two missing 2026 Korea Exchange closures** (3 June; 17 July, Constitution
-  Day, restored as a South Korean public holiday this year) — the exchange had
-  been shown as trading on both days.
-- **Holiday pages stay pinned to their own year** instead of the 2026 page
-  rolling over to the new year's calendar on January 1.
+- **Holiday, market hours, and DST pages load instantly** and work with
+  JavaScript disabled.
+- **Faster, smoother loading and updating** of the dashboard and its clocks.
 
 ## [0.3.0] - 2026-07-12
 
 ### Added
 
 - **Warsaw Stock Exchange (GPW)**, with 2026 holidays and DST dates.
-  (`public/markets-config.json`, `public/holidays.json`)
-- **A dedicated 2027 holidays page** (`holidays-2027.html`), linked from the
-  2026 holidays page and back. Each market's card shows a status badge —
-  "Fully Updated," "Partially Updated," or "Awaiting Official Dates" — so
-  it's clear at a glance which 2027 calendars are still provisional.
+- **A dedicated 2027 holidays page**, linked from the 2026 holidays page and
+  back. Each market's card shows a status badge — "Fully Updated," "Partially
+  Updated," or "Awaiting Official Dates" — so it's clear at a glance which
+  2027 calendars are still provisional.
 - **2027 holiday calendars for NYSE/Nasdaq, XETRA, SIX, GPW, JPX (Tokyo), and
   partial NZX**, sourced directly from each exchange's official site.
-  (`public/holidays.json`)
-- **The app version in the dashboard footer.**
-- **SEO improvements**: `robots.txt` and `sitemap.xml` so search engines can
-  discover every page; Open Graph and Twitter share cards (with a preview
-  image) so links render properly when shared; structured data (JSON-LD) so
-  search engines recognize the site as a live tool.
+- **Link previews**: shared links now show the site's title, description, and
+  a preview image.
 
 ### Fixed
 
 - **NZX (New Zealand Exchange) showed a spurious "1 day" in its countdown.**
-  A GMT+12 offset calculation in `parseTimeInTimezone` was ambiguous at
-  exactly ±12 hours, so Auckland's close time was computed a full day out.
-  (`src/timezone.ts`)
 
 ## [0.2.0] - 2026-07-05
 
 ### Added
 
-- Vitest test suite (46 tests) covering the timezone/DST logic
-  (`getMarketStatus`, `getDateFromIsoInTz`, `parseTimeInTimezone`,
-  `formatCountdown`, `getGMTOffset`), holiday lookup/aliases, date helpers,
-  and HTML escaping. Run with `npm test`; CI now runs the suite before every
-  deploy build.
-
-### Changed
-
-- Config-sourced strings (market names, countries, codes, holiday names) are
-  now HTML-escaped before being interpolated into rendered markup, hardening
-  against markup injection from config data. (`src/htmlUtils.ts`, all render
-  modules)
-- The trading-day progress bar now shows empty (0%) before the market opens
-  instead of a misleading full bar; the full bar still represents the last
-  completed session after close. (`src/main.ts`)
-- `localStorage` reads now validate the parsed shape (array of strings for
-  selected markets, plain object for time overrides) so corrupted storage
-  can't crash the dashboard. (`src/storage.ts`)
-- The Time Travel debug hotkey (Shift+D) no longer fires while typing in a
-  form field. (`src/debug.ts`)
-- The dashboard loads `markets-config.json` and `holidays.json` in parallel.
-  (`src/main.ts`)
-- CI installs dependencies with `npm ci` instead of `npm install` for
-  lockfile-faithful builds. (`.github/workflows/deploy.yml`)
-- Updated Vite via `npm audit fix` to clear dev-server-only security
-  advisories.
-
-### Removed
-
-- Dead code: unused `getHolidayForDate` in `src/holidays.ts` (which also had a
-  latent UTC/local date mismatch), unused `getUniqueCountries` and
-  `getMarketById` in `src/markets.ts`, the unused `Country` type, the
-  write-only `pendingChanges` map in `src/editor.ts`, and a duplicated
-  `getGMTOffset` implementation in `src/editor.ts` (now imported from
-  `src/timezone.ts`).
-- Duplicated constants: `src/storage.ts` and `src/main.ts` now use
-  `STORAGE_KEYS`/`TIMING` from `src/constants.ts` instead of hardcoded keys
-  and thresholds; flagcdn.com URLs are built by a shared `getFlagUrl` helper;
-  the unique-markets-per-country logic in the schedule and DST pages now uses
-  `getUniqueMarketsPerCountry` from `src/markets.ts`.
-
-### Documentation
-
-- `CLAUDE.md`: corrected the dev-server instructions (Node.js runs natively on
-  Windows; the old WSL/nvm commands referenced a stale path), documented the
-  DST-safe next-open computation, and noted the changelog convention.
-- Added the missing `flag` field to the NYSE entry in
-  `public/markets-config.json` and the optional `flag` property to the
-  `Market` type.
+- **The Market Hours page now accounts for holidays**: fully closed markets
+  show "Closed — [holiday]", and early-close days show the shortened session
+  with an "Early close" badge.
 
 ### Fixed
 
-- **Next-open countdowns were off by one hour across DST transitions.** The
-  holiday, weekend, and after-close branches of `getMarketStatus` computed the
-  next open by adding days to today's open instant with `Date.setDate()`,
-  which neither re-derives the market's UTC offset for the target date nor
-  accounts for the browser's own DST changes. Next opens are now computed by
-  finding the next trading *date* (as a `YYYY-MM-DD` string) and converting
-  `date + openTime` to UTC in the market's timezone. (`src/timezone.ts`)
-- **DST transition dates displayed one day early for users west of Greenwich.**
-  `formatDstDate` parsed `"YYYY-MM-DD"` via `new Date()`, which interprets it
-  as UTC midnight; it now parses the components into a local date.
-  (`src/dateUtils.ts`)
-- **Holiday summary page was hardcoded to 2026.** The year (page heading,
-  intro, and table data) is now derived from the current date via
-  `timeService`. (`src/holidays-summary.ts`, `holidays-summary.html`)
-- **Wall-clock→UTC conversion could pick a stale offset on DST transition
-  days.** The single-pass offset estimation sampled the timezone offset at the
-  wrong instant when a transition fell between the sample point and the
-  answer. Conversion is now consolidated into `getDateFromIsoInTz` with a
-  two-pass offset lookup; `parseTimeInTimezone` delegates to it.
-  (`src/dateUtils.ts`, `src/timezone.ts`)
-- **Editor: typing a market's default time back in did not clear its saved
-  override.** "Save All Changes" now removes stored overrides for rows whose
-  inputs match the config defaults, instead of silently leaving the old
-  override active on the dashboard. (`src/editor.ts`)
-- **Market Hours schedule page ignored holidays.** The page now loads the
-  holiday calendar: fully closed markets show "Closed — [holiday]", early-close
-  days show the adjusted close time with an "Early close" badge, and the
-  session duration accounts for early closes that shorten or remove the lunch
-  break. (`src/schedule.ts`)
+- **Countdowns and times were off by an hour around daylight-saving
+  changes.** Next-open countdowns across a DST weekend, and times on the day
+  of a transition itself, now resolve correctly.
+- **DST transition dates displayed one day early** for visitors in the
+  Americas.

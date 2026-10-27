@@ -16,7 +16,7 @@ docker compose exec tradingclocks npx tsc --noEmit    # type-check
 
 Deployment is automatic: every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`) which builds and deploys to GitHub Pages via `can-finance/tradingclocks`.
 
-Notable **user-facing** changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format). Keep entries high-level: significant user-facing changes and major code-structure changes qualify; minor bug fixes and polish live in the git history only. Dev-ops/internal changes (Docker config, CI pipeline tweaks, test flakiness fixes, tooling) do not belong in the changelog — it's meant for users of the site, not contributors.
+Notable **user-facing** changes should be recorded in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format). Only changes a visitor to the site would notice qualify — new pages, markets, holiday calendars, features, and fixes for times or statuses that were actually wrong — written in terms of what the visitor sees, with no file paths or function names. Everything else lives in the git history only: minor bug fixes and polish, small data corrections (a single holiday date or closing time), code restructuring and refactors, tests, and dev-ops/internal changes (Docker config, CI, tooling, dependencies, docs). The changelog is meant for users of the site, not contributors.
 
 ## Architecture Overview
 

@@ -10,6 +10,11 @@ const HOLIDAYS_FIXTURE = {
             { date: '2026-09-07', name: 'Labor Day', status: 'closed' },
             { date: '2026-11-27', name: 'Day After Thanksgiving', status: 'early-close', closeTime: '13:00' },
             { date: '2026-12-24', name: 'Christmas Eve', status: 'early-close', openTime: '10:30', closeTime: '13:00' }
+        ],
+        // Half days that end at or during the 11:30-12:30 lunch break
+        tse: [
+            { date: '2026-07-08', name: 'Half Day', status: 'early-close', closeTime: '11:30' },
+            { date: '2026-07-09', name: 'Half Day', status: 'early-close', closeTime: '12:00' }
         ]
     },
     '2027': {
@@ -144,6 +149,33 @@ describe('getMarketStatus — lunch breaks', () => {
         expect(s.isOpen).toBe(true);
         expect(s.nextEvent).toBe('closes');
         expect(s.nextEventTime.toISOString()).toBe('2026-07-07T06:30:00.000Z');
+    });
+
+    it('drops lunch when an early close lands at lunch start', () => {
+        setNow('2026-07-08T01:00:00Z'); // Wed 10:00 JST, half day closing 11:30
+        const s = getMarketStatus(tse);
+        expect(s.isOpen).toBe(true);
+        expect(s.nextEvent).toBe('closes');
+        expect(s.nextEventTime.toISOString()).toBe('2026-07-08T02:30:00.000Z');
+        expect(s.lunchStart).toBeUndefined();
+        expect(s.effectiveCloseTime).toBe('11:30');
+    });
+
+    it('reports closed, not lunch, after a half day ends at lunch start', () => {
+        setNow('2026-07-08T03:00:00Z'); // Wed 12:00 JST
+        const s = getMarketStatus(tse);
+        expect(s.isOpen).toBe(false);
+        expect(s.isOnLunch).toBeFalsy();
+        expect(s.nextEvent).toBe('opens');
+        expect(s.nextEventTime.toISOString()).toBe('2026-07-09T00:00:00.000Z');
+    });
+
+    it('ends the session at lunch start when an early close falls mid-lunch', () => {
+        setNow('2026-07-09T01:00:00Z'); // Thu 10:00 JST, half day closing 12:00
+        const s = getMarketStatus(tse);
+        expect(s.nextEvent).toBe('closes');
+        expect(s.nextEventTime.toISOString()).toBe('2026-07-09T02:30:00.000Z'); // 11:30 JST
+        expect(s.effectiveCloseTime).toBe('11:30');
     });
 });
 
